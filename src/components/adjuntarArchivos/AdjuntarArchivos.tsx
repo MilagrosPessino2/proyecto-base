@@ -3,16 +3,18 @@ import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button'
 import styles from './AdjuntarArchivos.module.scss'
 
 interface Archivo {
+    id: string
     nombre: string
     esImagen: boolean
-    url?: string // Object URL para preview si es imagen
+    url?: string
+    fp: string
 }
 
 const AdjuntarArchivos: React.FC = () => {
     const [archivos, setArchivos] = useState<Archivo[]>([])
     const ref = useRef<HTMLInputElement>(null)
+    const seq = useRef(0)
 
-    // Limpia los Object URLs al desmontar
     useEffect(() => {
         return () => {
             archivos.forEach((a) => a.url && URL.revokeObjectURL(a.url))
@@ -26,27 +28,50 @@ const AdjuntarArchivos: React.FC = () => {
         const files = Array.from(e.target.files ?? [])
         const nuevos: Archivo[] = []
 
-        files.forEach((f) => {
+        const existentes = new Set(archivos.map((a) => a.fp))
+        const agregadosAhora = new Set<string>()
+        const duplicados: string[] = []
+
+        for (const f of files) {
+            const fp = `${f.name}|${f.size}|${f.lastModified}`
+            if (existentes.has(fp) || agregadosAhora.has(fp)) {
+                duplicados.push(f.name)
+                continue
+            }
+
             const esImagen =
                 /image\/(jpeg|png)/i.test(f.type) ||
                 /\.(jpe?g|png)$/i.test(f.name)
+            const id = `${Date.now()}-${seq.current++}`
 
             if (esImagen) {
-                const url = URL.createObjectURL(f) // no base64, no storage
-                nuevos.push({ nombre: f.name, esImagen: true, url })
+                const url = URL.createObjectURL(f)
+                nuevos.push({ id, nombre: f.name, esImagen: true, url, fp })
             } else {
-                nuevos.push({ nombre: f.name, esImagen: false })
+                nuevos.push({ id, nombre: f.name, esImagen: false, fp })
             }
-        })
+            agregadosAhora.add(fp)
+        }
 
-        setArchivos((prev) => [...prev, ...nuevos])
-
-        // Permite volver a seleccionar los mismos archivos
+        if (duplicados.length)
+            alert(
+                `Se ignoraron archivos duplicados: ${Array.from(
+                    new Set(duplicados)
+                ).join(', ')}`
+            )
+        if (nuevos.length) setArchivos((prev) => [...prev, ...nuevos])
         e.target.value = ''
     }
 
+    const handleRemove = (id: string) => {
+        setArchivos((prev) => {
+            const file = prev.find((a) => a.id === id)
+            if (file?.url) URL.revokeObjectURL(file.url)
+            return prev.filter((a) => a.id !== id)
+        })
+    }
+
     const handleClear = () => {
-        // Revoca todas las URLs para liberar memoria
         archivos.forEach((a) => a.url && URL.revokeObjectURL(a.url))
         setArchivos([])
     }
@@ -74,8 +99,8 @@ const AdjuntarArchivos: React.FC = () => {
             </div>
 
             <div className={styles.gallery}>
-                {archivos.map((file, i) => (
-                    <div className={styles.imgCard} key={`${file.nombre}-${i}`}>
+                {archivos.map((file) => (
+                    <div className={styles.imgCard} key={file.id}>
                         <div className={styles.imgCardInner}>
                             {file.esImagen && file.url ? (
                                 <img
@@ -84,9 +109,25 @@ const AdjuntarArchivos: React.FC = () => {
                                     alt={file.nombre}
                                 />
                             ) : (
-                                <span>{file.nombre}</span>
+                                <span
+                                    className={styles.fileName}
+                                    title={file.nombre}
+                                >
+                                    {file.nombre}
+                                </span>
                             )}
                         </div>
+
+                        {/* botón va después para quedar arriba */}
+                        <button
+                            type='button'
+                            className={styles.removeBtn}
+                            aria-label={`Eliminar ${file.nombre}`}
+                            title='Eliminar'
+                            onClick={() => handleRemove(file.id)}
+                        >
+                            ×
+                        </button>
                     </div>
                 ))}
             </div>
