@@ -8,34 +8,33 @@
 
 // export default App;
 
-import { Routes, Route } from 'react-router-dom';
- import ProtectedRoute from './components/ProtectedRoute';
- import { Roles } from './utils/constants';
-import AdminPage from './components/AdminPage';
-import ADJ from './components/AdjuntarArchivos';
+import { Routes, Route } from 'react-router-dom'
+import ProtectedRoute from './components/ProtectedRoute'
+import { Roles } from './utils/constants'
+import AdminPage from './components/AdminPage'
+import ADJ from './components/adjuntarArchivos/AdjuntarArchivos'
 
+const mockUserGroups = ['ADMINISTRADORES'] // Se puede cargar con contexto o API
+const isLoading = false // Cambia según la lógica real
 
- const mockUserGroups = ['ADMINISTRADORES']; // Se puede cargar con contexto o API
- const isLoading = false; // Cambia según la lógica real
+const App = () => {
+    return (
+        <Routes>
+            <Route path='/' element={<ADJ />} />
+            <Route
+                path='/admin'
+                element={
+                    <ProtectedRoute
+                        requiredRole={Roles.OTRO}
+                        userGroups={mockUserGroups}
+                        isLoading={isLoading}
+                    >
+                        <AdminPage />
+                    </ProtectedRoute>
+                }
+            />
+        </Routes>
+    )
+}
 
- const App = () => {
-   return (
-    <Routes>
-     <Route path="/" element={<ADJ />} />
-       <Route
-         path="/admin"
-        element={
-           <ProtectedRoute
-            requiredRole={Roles.OTRO}
-           userGroups={mockUserGroups}
-            isLoading={isLoading}
-           >
-            <AdminPage />
-          </ProtectedRoute>
-        }
-      />
-   </Routes>
-  );
-};
-
- export default App;
+export default App
