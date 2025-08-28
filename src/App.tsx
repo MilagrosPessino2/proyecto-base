@@ -12,7 +12,7 @@ import { Routes, Route } from 'react-router-dom';
  import ProtectedRoute from './components/ProtectedRoute';
  import { Roles } from './utils/constants';
 import AdminPage from './components/AdminPage';
-import Form from './components/Form';
+import ADJ from './components/AdjuntarArchivos';
 
 
  const mockUserGroups = ['ADMINISTRADORES']; // Se puede cargar con contexto o API
@@ -21,7 +21,7 @@ import Form from './components/Form';
  const App = () => {
    return (
     <Routes>
-     <Route path="/" element={<Form />} />
+     <Route path="/" element={<ADJ />} />
        <Route
          path="/admin"
         element={
