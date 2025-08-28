@@ -1,0 +1,41 @@
+/* Contenedor full-width centrado */
+.page {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+  margin-top: 3rem;
+}
+
+/* Caja del formulario */
+.form {
+  width: 100%;
+  max-width: 560px;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+
+.row { width: 100%; }
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+/* Mensaje de error (por si lo necesitás en otros casos) */
+.error {
+  display: block;
+  margin-top: 4px;
+  color: #a4262c;
+  font-size: 12px;
+  line-height: 20px;
+  font-family: inherit;
+}
