@@ -23,7 +23,7 @@
   width: 100%;
 }
 
-/* Card cuadrada en layout grid: contenido arriba + caption abajo */
+/* Card cuadrada en layout grid*/
 .imgCard {
   position: relative;
   display: grid;
@@ -43,7 +43,7 @@
   justify-content: center;
   text-align: center;
   box-sizing: border-box;
-  min-height: 0; /* permite contraerse dentro del grid */
+  min-height: 0;
 }
 
 /* Imagen dentro de la card */
@@ -66,12 +66,12 @@
   color: #323130;
   background: linear-gradient(to top, rgba(255,255,255,.95), rgba(255,255,255,.65));
   border-top: 1px solid #eee;
-  white-space: normal;        /* ⬅ permite varias líneas */
-  overflow-wrap: anywhere;    /* ⬅ corta si hace falta */
+  white-space: normal;       
+  overflow-wrap: anywhere;    
   word-break: normal;
 }
 
-/* Archivos NO imagen mostrados en el área superior */
+/* Archivos */
 .fileName {
   white-space: normal;
   overflow-wrap: anywhere;
@@ -80,6 +80,7 @@
   font-size: 12px;
   font-weight: 500;
   color: #323130;
+
 }
 
 /* Botón eliminar (flotante) */
@@ -120,14 +121,75 @@
   margin-bottom: 8px;
 }
 
+
+/* ======= LISTA DE NO-IMÁGENES ======= */
+.filesSection { margin-top: 20px; }
+.filesHeader { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 8px; 
+font-family: "Segoe UI", "Segoe UI Variable", -apple-system, system-ui,
+               "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;}
+
+.fileList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.removeBtnInline {
+  position: static;    
+  top: auto;
+  right: auto;
+  margin-left: 8px;     
+}
+
+.fileItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 5px;
+}
+
+.fileLeft { display: flex; align-items: center; gap: 10px; min-width: 0; }
+
+.fileIcon {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: 8px;
+  background: #eef2f7;
+  color: #1f2937;
+  font-weight: 700;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fileText { display: flex; flex-direction: column; min-width: 0; 
+}
+.fileNameText {
+  font-size: 12px; color: #333; font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-family: "Segoe UI", "Segoe UI Variable", -apple-system, system-ui, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  // white-space: normal;        
+  // overflow-wrap: anywhere;    
+  // word-break: normal;
+}
+.fileMeta { font-size: 12px; color: #666; }
+
+
+
 /* Breakpoints */
 @media (max-width: 1024px) {
-  .gallery { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .gallery,.fileList { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));}
+  
 }
 
 @media (max-width: 768px) {
-  .gallery { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .gallery,.fileList { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
 }
 @media (max-width: 480px) {
-  .gallery { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+  .gallery,.fileList { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
 }
