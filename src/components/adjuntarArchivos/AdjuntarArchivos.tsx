@@ -3,6 +3,7 @@ import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button'
 import styles from './AdjuntarArchivos.module.scss'
 import { useNavigate } from 'react-router-dom'
 import { Stack } from '@fluentui/react'
+
 interface Archivo {
     id: string
     nombre: string
@@ -19,21 +20,24 @@ const AdjuntarArchivos: React.FC = () => {
 
     useEffect(() => {
         return () => {
+            // esto hace que se liberen las URLs creadas
             archivos.forEach((a) => a.url && URL.revokeObjectURL(a.url))
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    // abrir diálogo de selección
     const handleUpload = () => ref.current?.click()
 
+    // manejar selección
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files ?? [])
         const nuevos: Archivo[] = []
-
         const existentes = new Set(archivos.map((a) => a.fp))
         const agregadosAhora = new Set<string>()
         const duplicados: string[] = []
 
+        // evitar duplicados (mismo nombre, tamaño y fecha)
         for (const f of files) {
             const fp = `${f.name}|${f.size}|${f.lastModified}`
             if (existentes.has(fp) || agregadosAhora.has(fp)) {
@@ -54,7 +58,7 @@ const AdjuntarArchivos: React.FC = () => {
             }
             agregadosAhora.add(fp)
         }
-
+        // alertar si hubo duplicados
         if (duplicados.length)
             alert(
                 `Se ignoraron archivos duplicados: ${Array.from(
@@ -64,7 +68,7 @@ const AdjuntarArchivos: React.FC = () => {
         if (nuevos.length) setArchivos((prev) => [...prev, ...nuevos])
         e.target.value = ''
     }
-
+    // eliminar uno
     const handleRemove = (id: string) => {
         setArchivos((prev) => {
             const file = prev.find((a) => a.id === id)
@@ -72,12 +76,13 @@ const AdjuntarArchivos: React.FC = () => {
             return prev.filter((a) => a.id !== id)
         })
     }
-
+    // eliminar todos
     const handleClear = () => {
         archivos.forEach((a) => a.url && URL.revokeObjectURL(a.url))
         setArchivos([])
     }
 
+    
     return (
         <Stack tokens={{ childrenGap: 16 }} styles={{ root: { padding: 16 } }}>
             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>

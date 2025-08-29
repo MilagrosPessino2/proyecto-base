@@ -17,6 +17,7 @@ interface FormData {
     fecha: Date | null
 }
 
+// Constantes para persistencia
 const STORAGE_KEY = 'form_datos_v1'
 const PERSIST_IN: 'local' | 'session' = 'local'
 const storage =
@@ -24,6 +25,7 @@ const storage =
 
 const REQUIRED_MSG = 'Esta campo es obligatorio.'
 
+// Cargar datos guardados
 function loadPersisted(): FormData | null {
     try {
         const raw = storage.getItem(STORAGE_KEY)
@@ -43,6 +45,7 @@ function loadPersisted(): FormData | null {
     }
 }
 
+// Guardar datos en storage
 function savePersisted(data: FormData) {
     storage.setItem(
         STORAGE_KEY,
@@ -54,6 +57,7 @@ function savePersisted(data: FormData) {
     )
 }
 
+// Borrar datos guardados
 function clearPersisted() {
     storage.removeItem(STORAGE_KEY)
 }
@@ -87,7 +91,7 @@ const Form: React.FC<{ onSave?: (data: FormData) => void }> = ({ onSave }) => {
         ],
         []
     )
-
+    // Validaciones 
     const errors = {
         nombre: !data.nombre.trim() ? REQUIRED_MSG : undefined,
         categoria: data.categoria === undefined ? REQUIRED_MSG : undefined,
@@ -95,13 +99,14 @@ const Form: React.FC<{ onSave?: (data: FormData) => void }> = ({ onSave }) => {
     }
     const isValid = !errors.nombre && !errors.categoria && !errors.fecha
 
+    // Limpiar formulario
     const reset = () => {
         setData({ nombre: '', categoria: undefined, fecha: null })
         setSubmitted(false)
         clearPersisted()
         setRev((r) => r + 1) // limpia select re-montando
     }
-
+    // Envío de formulario 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         setSubmitted(true)
@@ -117,9 +122,9 @@ const Form: React.FC<{ onSave?: (data: FormData) => void }> = ({ onSave }) => {
 
         alert(
             `Guardado:
-- Nombre: ${data.nombre}
-- Categoría: ${categoriaTexto}
-- Fecha: ${fechaTexto}`
+            - Nombre: ${data.nombre}
+            - Categoría: ${categoriaTexto}
+            - Fecha: ${fechaTexto}`
         )
 
         // Limpiar storage y formulario tras guardar
