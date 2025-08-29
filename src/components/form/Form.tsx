@@ -19,9 +19,9 @@ interface FormData {
 
 // Constantes para persistencia
 const STORAGE_KEY = 'form_datos_v1'
-const PERSIST_IN: 'local' | 'session' = 'local'
+const PERSIST_IN: 'local' | 'session' = 'session'
 const storage =
-    PERSIST_IN === 'local' ? window.localStorage : window.sessionStorage
+    PERSIST_IN === 'session' ? window.localStorage : window.sessionStorage
 
 const REQUIRED_MSG = 'Esta campo es obligatorio.'
 
@@ -91,7 +91,7 @@ const Form: React.FC<{ onSave?: (data: FormData) => void }> = ({ onSave }) => {
         ],
         []
     )
-    // Validaciones 
+    // Validaciones
     const errors = {
         nombre: !data.nombre.trim() ? REQUIRED_MSG : undefined,
         categoria: data.categoria === undefined ? REQUIRED_MSG : undefined,
@@ -106,7 +106,7 @@ const Form: React.FC<{ onSave?: (data: FormData) => void }> = ({ onSave }) => {
         clearPersisted()
         setRev((r) => r + 1) // limpia select re-montando
     }
-    // Envío de formulario 
+    // Envío de formulario
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         setSubmitted(true)

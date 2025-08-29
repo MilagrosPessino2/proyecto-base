@@ -65,7 +65,7 @@ const AdjuntarArchivos: React.FC = () => {
                     new Set(duplicados)
                 ).join(', ')}`
             )
-        if (nuevos.length) setArchivos((prev) => [...prev, ...nuevos])
+        if (nuevos.length) setArchivos((prev) => [...nuevos, ...prev])
         e.target.value = ''
     }
     // eliminar uno
@@ -82,7 +82,6 @@ const AdjuntarArchivos: React.FC = () => {
         setArchivos([])
     }
 
-    
     return (
         <Stack tokens={{ childrenGap: 16 }} styles={{ root: { padding: 16 } }}>
             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
@@ -141,7 +140,17 @@ const AdjuntarArchivos: React.FC = () => {
                                 )}
                             </div>
 
-                            {/* botón va después para quedar arriba */}
+                            {/* ⬇️ NUEVO: caption con el nombre para imágenes */}
+                            {file.esImagen && (
+                                <div
+                                    className={styles.caption}
+                                    title={file.nombre}
+                                >
+                                    {file.nombre}
+                                </div>
+                            )}
+
+                            {/* botón eliminar */}
                             <button
                                 type='button'
                                 className={styles.removeBtn}
