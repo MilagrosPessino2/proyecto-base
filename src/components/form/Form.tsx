@@ -8,6 +8,8 @@ import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown'
 import { DatePicker } from '@fluentui/react/lib/DatePicker'
 import { PrimaryButton, DefaultButton } from '@fluentui/react/lib/Button'
 import styles from './Form.module.scss'
+import { Stack } from '@fluentui/react'
+import { useNavigate } from 'react-router-dom'
 
 interface FormData {
     nombre: string
@@ -65,6 +67,7 @@ const Form: React.FC<{ onSave?: (data: FormData) => void }> = ({ onSave }) => {
     const [data, setData] = useState<FormData>(initial)
     const [submitted, setSubmitted] = useState(false)
     const [rev, setRev] = useState(0) // remonta el Dropdown al limpiar
+    const navigate = useNavigate()
 
     // Persistencia con debounce
     const saveTmr = useRef<number | null>(null)
@@ -144,58 +147,81 @@ const Form: React.FC<{ onSave?: (data: FormData) => void }> = ({ onSave }) => {
     }
 
     return (
-        <div className={styles.page}>
-            <form className={styles.form} onSubmit={handleSubmit} noValidate>
-                <div className={styles.row}>
-                    <TextField
-                        label='Nombre *'
-                        placeholder='Ingresá un nombre'
-                        value={data.nombre}
-                        onChange={(_, v) =>
-                            setData((s) => ({ ...s, nombre: v ?? '' }))
-                        }
-                        errorMessage={submitted ? errors.nombre : undefined}
-                        aria-invalid={submitted && !!errors.nombre}
-                    />
-                </div>
+        <Stack tokens={{ childrenGap: 16 }} styles={{ root: { padding: 16 } }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                <DefaultButton
+                    text='← Volver'
+                    onClick={() => navigate(-1)}
+                    styles={{
+                        root: {
+                            width: 'auto', // que se ajuste al contenido
+                            minWidth: 100, // tamaño mínimo
+                            padding: '0 12px',
+                        },
+                        label: { fontSize: 14 },
+                    }}
+                />
+            </div>
 
-                <div className={styles.row}>
-                    <Dropdown
-                        key={rev}
-                        label='Categoría *'
-                        placeholder='Seleccioná una categoría'
-                        options={options}
-                        selectedKey={data.categoria}
-                        onChange={(_, opt) =>
-                            setData((s) => ({ ...s, categoria: opt?.key }))
-                        }
-                        errorMessage={submitted ? errors.categoria : undefined}
-                        aria-invalid={submitted && !!errors.categoria}
-                    />
-                </div>
+            <div className={styles.page}>
+                <form
+                    className={styles.form}
+                    onSubmit={handleSubmit}
+                    noValidate
+                >
+                    <div className={styles.row}>
+                        <TextField
+                            label='Nombre *'
+                            placeholder='Ingresá un nombre'
+                            value={data.nombre}
+                            onChange={(_, v) =>
+                                setData((s) => ({ ...s, nombre: v ?? '' }))
+                            }
+                            errorMessage={submitted ? errors.nombre : undefined}
+                            aria-invalid={submitted && !!errors.nombre}
+                        />
+                    </div>
 
-                <div className={styles.row}>
-                    <DatePicker
-                        label='Fecha *'
-                        placeholder='Seleccionar fecha'
-                        value={data.fecha ?? undefined}
-                        onSelectDate={(d) =>
-                            setData((s) => ({ ...s, fecha: d ?? null }))
-                        }
-                        textField={dateTextFieldProps}
-                    />
-                </div>
+                    <div className={styles.row}>
+                        <Dropdown
+                            key={rev}
+                            label='Categoría *'
+                            placeholder='Seleccioná una categoría'
+                            options={options}
+                            selectedKey={data.categoria}
+                            onChange={(_, opt) =>
+                                setData((s) => ({ ...s, categoria: opt?.key }))
+                            }
+                            errorMessage={
+                                submitted ? errors.categoria : undefined
+                            }
+                            aria-invalid={submitted && !!errors.categoria}
+                        />
+                    </div>
 
-                <div className={styles.actions}>
-                    <PrimaryButton type='submit' text='Guardar' />
-                    <DefaultButton
-                        type='button'
-                        text='Limpiar'
-                        onClick={reset}
-                    />
-                </div>
-            </form>
-        </div>
+                    <div className={styles.row}>
+                        <DatePicker
+                            label='Fecha *'
+                            placeholder='Seleccionar fecha'
+                            value={data.fecha ?? undefined}
+                            onSelectDate={(d) =>
+                                setData((s) => ({ ...s, fecha: d ?? null }))
+                            }
+                            textField={dateTextFieldProps}
+                        />
+                    </div>
+
+                    <div className={styles.actions}>
+                        <PrimaryButton type='submit' text='Guardar' />
+                        <DefaultButton
+                            type='button'
+                            text='Limpiar'
+                            onClick={reset}
+                        />
+                    </div>
+                </form>
+            </div>
+        </Stack>
     )
 }
 

@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button'
 import styles from './AdjuntarArchivos.module.scss'
-
+import { useNavigate } from 'react-router-dom'
+import { Stack } from '@fluentui/react'
 interface Archivo {
     id: string
     nombre: string
@@ -14,6 +15,7 @@ const AdjuntarArchivos: React.FC = () => {
     const [archivos, setArchivos] = useState<Archivo[]>([])
     const ref = useRef<HTMLInputElement>(null)
     const seq = useRef(0)
+    const navigate = useNavigate()
 
     useEffect(() => {
         return () => {
@@ -77,61 +79,78 @@ const AdjuntarArchivos: React.FC = () => {
     }
 
     return (
-        <div className={styles.home}>
-            <input
-                ref={ref}
-                type='file'
-                multiple
-                onChange={handleChange}
-                style={{ display: 'none' }}
-            />
-
-            <div className={styles.toolbar}>
-                <PrimaryButton
-                    text='Adjuntar archivos'
-                    onClick={handleUpload}
-                />
+        <Stack tokens={{ childrenGap: 16 }} styles={{ root: { padding: 16 } }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
                 <DefaultButton
-                    text='Limpiar'
-                    onClick={handleClear}
-                    disabled={!archivos.length}
+                    text='← Volver'
+                    onClick={() => navigate(-1)}
+                    styles={{
+                        root: {
+                            width: 'auto', // que se ajuste al contenido
+                            minWidth: 100, // tamaño mínimo
+                            padding: '0 12px',
+                        },
+                        label: { fontSize: 14 },
+                    }}
                 />
             </div>
 
-            <div className={styles.gallery}>
-                {archivos.map((file) => (
-                    <div className={styles.imgCard} key={file.id}>
-                        <div className={styles.imgCardInner}>
-                            {file.esImagen && file.url ? (
-                                <img
-                                    className={styles.cardImg}
-                                    src={file.url}
-                                    alt={file.nombre}
-                                />
-                            ) : (
-                                <span
-                                    className={styles.fileName}
-                                    title={file.nombre}
-                                >
-                                    {file.nombre}
-                                </span>
-                            )}
-                        </div>
+            <div className={styles.home}>
+                <input
+                    ref={ref}
+                    type='file'
+                    multiple
+                    onChange={handleChange}
+                    style={{ display: 'none' }}
+                />
 
-                        {/* botón va después para quedar arriba */}
-                        <button
-                            type='button'
-                            className={styles.removeBtn}
-                            aria-label={`Eliminar ${file.nombre}`}
-                            title='Eliminar'
-                            onClick={() => handleRemove(file.id)}
-                        >
-                            ×
-                        </button>
-                    </div>
-                ))}
+                <div className={styles.toolbar}>
+                    <PrimaryButton
+                        text='Adjuntar archivos'
+                        onClick={handleUpload}
+                    />
+                    <DefaultButton
+                        text='Limpiar'
+                        onClick={handleClear}
+                        disabled={!archivos.length}
+                    />
+                </div>
+
+                <div className={styles.gallery}>
+                    {archivos.map((file) => (
+                        <div className={styles.imgCard} key={file.id}>
+                            <div className={styles.imgCardInner}>
+                                {file.esImagen && file.url ? (
+                                    <img
+                                        className={styles.cardImg}
+                                        src={file.url}
+                                        alt={file.nombre}
+                                    />
+                                ) : (
+                                    <span
+                                        className={styles.fileName}
+                                        title={file.nombre}
+                                    >
+                                        {file.nombre}
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* botón va después para quedar arriba */}
+                            <button
+                                type='button'
+                                className={styles.removeBtn}
+                                aria-label={`Eliminar ${file.nombre}`}
+                                title='Eliminar'
+                                onClick={() => handleRemove(file.id)}
+                            >
+                                ×
+                            </button>
+                        </div>
+                    ))}
+                </div>
             </div>
-        </div>
+        </Stack>
     )
 }
 

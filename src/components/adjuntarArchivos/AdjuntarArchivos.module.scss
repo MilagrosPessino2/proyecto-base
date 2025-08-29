@@ -2,7 +2,8 @@
 .home {
   margin: 0 auto;
   padding: 12px;
-  max-width: 1200px;
+  width: 85%;        /* usar todo el ancho */
+  max-width: none;    /* eliminar la limitación */
   box-sizing: border-box;
 }
 
@@ -18,7 +19,8 @@
 .gallery {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  width: 100%;        /* asegurar que la grilla use todo el ancho */
 }
 
 /* Card cuadrada */
@@ -90,6 +92,14 @@
   transition: opacity .15s ease, transform .05s ease;
   z-index: 2;           /* encima de la imagen */
 }
+.backBtn {
+  width: auto;
+  min-width: 100px;
+  padding: 0 12px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
 
 .imgCard:hover .removeBtn { opacity: 1; }
 .removeBtn:hover { transform: scale(1.05); }
