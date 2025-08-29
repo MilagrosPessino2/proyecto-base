@@ -22,7 +22,6 @@ const STORAGE_KEY = 'form_datos_v1'
 const PERSIST_IN: 'local' | 'session' = 'session'
 const storage =
     PERSIST_IN === 'session' ? window.localStorage : window.sessionStorage
-
 const REQUIRED_MSG = 'Esta campo es obligatorio.'
 
 // Cargar datos guardados
@@ -73,7 +72,7 @@ const Form: React.FC<{ onSave?: (data: FormData) => void }> = ({ onSave }) => {
     const [rev, setRev] = useState(0) // remonta el Dropdown al limpiar
     const navigate = useNavigate()
 
-    // Persistencia con debounce
+    // Persistencia con debounce, debound es un retardo para no guardar en cada cambio
     const saveTmr = useRef<number | null>(null)
     useEffect(() => {
         if (saveTmr.current) window.clearTimeout(saveTmr.current)

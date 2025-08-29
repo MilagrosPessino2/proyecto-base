@@ -12,7 +12,7 @@ import { Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import { Roles } from './utils/constants'
 import AdminPage from './components/AdminPage'
-import AdjuntarArchivos from './components/adjuntarArchivos/AdjuntarArchivos'
+import AdjuntarArchivos from './components/adjuntarArchivosAgus/AdjuntarArchivos'
 import Form from './components/form/Form'
 import Home from './components/Home'
 
@@ -23,8 +23,7 @@ const App = () => {
     return (
         <Routes>
             {/* <Route path='/' element={<ADJ />} /> */}
-            <Route path='/' element={<Home/>} />
-
+            <Route path='/' element={<Home />} />
             <Route path='/adjuntar-archivo' element={<AdjuntarArchivos />} />
             <Route path='/form' element={<Form />} />
             <Route

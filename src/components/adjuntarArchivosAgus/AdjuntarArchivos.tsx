@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button'
 import styles from './AdjuntarArchivos.module.scss'
-import { useNavigate } from 'react-router-dom'
 import { Stack } from '@fluentui/react'
 
 interface Archivo {
@@ -13,14 +12,13 @@ interface Archivo {
 }
 
 const AdjuntarArchivos: React.FC = () => {
-    const [archivos, setArchivos] = useState<Archivo[]>([])
-    const ref = useRef<HTMLInputElement>(null)
-    const seq = useRef(0)
-    const navigate = useNavigate()
+    const [archivos, setArchivos] = useState<Archivo[]>([]) //array de archivos
+    const ref = useRef<HTMLInputElement>(null) //es para el input file
+    const seq = useRef(0) //es para generar ids únicos
 
     useEffect(() => {
         return () => {
-            archivos.forEach((a) => a.url && URL.revokeObjectURL(a.url))
+            archivos.forEach((a) => a.url && URL.revokeObjectURL(a.url)) //limpiar URLs
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -88,24 +86,8 @@ const AdjuntarArchivos: React.FC = () => {
 
     return (
         <Stack tokens={{ childrenGap: 16 }} styles={{ root: { padding: 16 } }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                {/* eliminar volver */}
-                <DefaultButton
-                    text='← Volver'
-                    onClick={() => navigate(-1)}
-                    styles={{
-                        root: {
-                            width: 'auto',
-                            minWidth: 100,
-                            padding: '0 12px',
-                        },
-                        label: { fontSize: 14 },
-                    }}
-                />
-            </div>
-
             {/* cambiar home por container u otro */}
-            <div className={styles.home}>
+            <div className={styles.toolbarContainer}>
                 {/* borrar volver */}
                 <input
                     ref={ref}
@@ -157,45 +139,6 @@ const AdjuntarArchivos: React.FC = () => {
                                 </button>
                             </div>
                         ))}
-                    </div>
-                )}
-
-                {/* Lista de archivos NO imagen */}
-                {otros.length > 0 && (
-                    <div className={styles.filesSection}>
-                        <div className={styles.filesHeader}>Archivos</div>
-                        <div className={styles.fileList}>
-                            {otros.map((file) => (
-                                <div
-                                    className={styles.fileItem}
-                                    key={file.id}
-                                    title={file.nombre}
-                                >
-                                    <div className={styles.fileLeft}>
-                                        <div className={styles.fileIcon}>
-                                            {getExt(file.nombre)}
-                                        </div>
-                                        <div className={styles.fileText}>
-                                            <div
-                                                className={styles.fileNameText}
-                                            >
-                                                {file.nombre}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button
-                                        type='button'
-                                        className={`${styles.removeBtn} ${styles.removeBtnInline}`}
-                                        aria-label={`Eliminar ${file.nombre}`}
-                                        title='Eliminar'
-                                        onClick={() => handleRemove(file.id)}
-                                    >
-                                        {' '}
-                                        ×
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
                     </div>
                 )}
             </div>
