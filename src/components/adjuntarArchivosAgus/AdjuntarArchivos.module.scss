@@ -112,6 +112,13 @@
   outline-offset: 2px;
 }
 
+.removeBtn i {
+  color: #fff;      /* hereda el blanco que definiste */
+  font-size: 14px;  /* ajustá el tamaño del glifo */
+  line-height: 1;
+}
+
+
 /* Botón volver (opcional) */
 .backBtn {
   width: auto;
