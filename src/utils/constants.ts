@@ -8,6 +8,7 @@ export const MIME_BY_EXT = {
     jpg: 'image/jpeg',
     jpeg: 'image/jpeg',
     png: 'image/png',
+    pdf: 'application/pdf',
 } as const;
 export type ImageExt = keyof typeof MIME_BY_EXT;
 export type ImageMime = (typeof MIME_BY_EXT)[ImageExt];

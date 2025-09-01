@@ -36,7 +36,7 @@ const AdjuntarArchivos: React.FC = () => {
         setMostrarGaleria(hayImagenes);
     }, [archivos]);
 
-    // ⬇️ sin .click(): el <label> dispara el input nativo
+    // ⬇sin .click(): el <label> dispara el input nativo
     // const handleUpload = () => fileInputRef.current?.click();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,15 +114,19 @@ const AdjuntarArchivos: React.FC = () => {
     }) => (
         <div className={styles.imgCard} key={file.id}>
             <div className={styles.imgCardInner}>
-                <img
-                    className={styles.cardImg}
-                    src={file.url}
-                    alt={file.nombre}
-                />
+                <div className={styles.imgViewport}>
+                    <img
+                        className={styles.cardImg}
+                        src={file.url}
+                        alt={file.nombre}
+                    />
+                </div>
             </div>
+
             <div className={styles.caption} title={file.nombre}>
                 {file.nombre}
             </div>
+
             <button
                 type='button'
                 className={styles.removeBtn}
