@@ -1,11 +1,5 @@
-/* Contenedor general */
-.toolbarContainer {
-  margin: 0 auto;
-  padding: 12px;
-  width: 85%;
-  max-width: none;
-  box-sizing: border-box;
-}
+
+
 
 /* Toolbar */
 .toolbar {
@@ -225,7 +219,7 @@
   text-overflow: ellipsis;
   font-family: "Segoe UI", "Segoe UI Variable", -apple-system, system-ui, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
 }
-.uploadBtnWrapper { position: relative; display: inline-block; }
+
 .overlayInput {
   position: absolute; inset: 0;
   width: 100%; height: 100%;

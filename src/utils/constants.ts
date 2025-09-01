@@ -22,3 +22,20 @@ export const getFileExt = (n: string) =>
 export const isSupportedImage = (f: File) =>
     MIMES.has((f.type || '').toLowerCase() as ImageMime) ||
     EXTS.has(getFileExt(f.name) as ImageExt);
+
+export interface IFileAdd{
+    id: string;
+    file: File;
+    ServerRelativeUrl?: string;
+    added: boolean;
+    deleted: boolean; 
+
+}
+
+export interface Archivo {
+    id: string;
+    nombre: string;
+    esImagen: boolean;
+    url?: string;
+    fileKey: string;
+}
