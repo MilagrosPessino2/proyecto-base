@@ -11,14 +11,17 @@ interface Archivo {
     fp: string;
 }
 
+// Ruta al PNG dentro de /public (ajustá si lo pusiste en /public/icons)
+const ICON_DELETE = '/delete.png'; // o '/icons/delete.png'
+
 const AdjuntarArchivos: React.FC = () => {
-    const [archivos, setArchivos] = useState<Archivo[]>([]); //array de archivos
-    const ref = useRef<HTMLInputElement>(null); //es para el input file
-    const seq = useRef(0); //es para generar ids únicos
+    const [archivos, setArchivos] = useState<Archivo[]>([]);
+    const ref = useRef<HTMLInputElement>(null);
+    const seq = useRef(0);
 
     useEffect(() => {
         return () => {
-            archivos.forEach((a) => a.url && URL.revokeObjectURL(a.url)); //limpiar URLs
+            archivos.forEach((a) => a.url && URL.revokeObjectURL(a.url));
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -78,17 +81,12 @@ const AdjuntarArchivos: React.FC = () => {
         setArchivos([]);
     };
 
-    // --- separo para render ---
+    // Render
     const imagenes = archivos.filter((a) => a.esImagen && a.url);
-    const otros = archivos.filter((a) => !a.esImagen);
-    const getExt = (name: string) =>
-        name.split('.').pop()?.toUpperCase() ?? 'FILE';
 
     return (
         <Stack tokens={{ childrenGap: 16 }} styles={{ root: { padding: 16 } }}>
-            {/* cambiar home por container u otro */}
             <div className={styles.toolbarContainer}>
-                {/* borrar volver */}
                 <input
                     ref={ref}
                     type='file'
@@ -102,7 +100,6 @@ const AdjuntarArchivos: React.FC = () => {
                         text='Adjuntar archivos'
                         onClick={handleUpload}
                     />
-                    {/* limpiar sacarlo */}
                     <DefaultButton
                         text='Limpiar'
                         onClick={handleClear}
@@ -128,6 +125,8 @@ const AdjuntarArchivos: React.FC = () => {
                                 >
                                     {file.nombre}
                                 </div>
+
+                                {/* Botón eliminar con PNG desde /public */}
                                 <button
                                     type='button'
                                     className={styles.removeBtn}
@@ -135,7 +134,12 @@ const AdjuntarArchivos: React.FC = () => {
                                     title='Eliminar'
                                     onClick={() => handleRemove(file.id)}
                                 >
-                                    ×
+                                    <img
+                                        src={ICON_DELETE}
+                                        alt=''
+                                        aria-hidden='true'
+                                        className={styles.removeIcon}
+                                    />
                                 </button>
                             </div>
                         ))}

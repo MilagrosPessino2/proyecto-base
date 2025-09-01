@@ -80,38 +80,42 @@
   font-size: 12px;
   font-weight: 500;
   color: #323130;
-
 }
 
-/* Botón eliminar (flotante) */
+/* Botón eliminar (flotante) — ahora usa icono PNG */
 .removeBtn {
   position: absolute;
   top: 6px;
   right: 6px;
-  width: 28px;
-  height: 28px;
+  padding: 4px;           /* aumenta el área de click, NO visible */
   border: none;
-  border-radius: 50%;
-  background: rgba(0,0,0,.55);
-  color: #fff;
-  font-size: 18px;
-  line-height: 28px;
+  background: transparent; /* 👈 fondo transparente */
+  border-radius: 0;         /* sin círculo */
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  opacity: .9;
-  transition: opacity .15s ease, transform .05s ease;
-  z-index: 3; /* por encima del contenido */
+  opacity: .95;
+  transition: transform .08s ease, opacity .15s ease;
+  z-index: 3;
 }
-
 .imgCard:hover .removeBtn { opacity: 1; }
-.removeBtn:hover { transform: scale(1.05); }
+.removeBtn:hover .removeIcon { transform: scale(1.06); }
 .removeBtn:focus-visible {
-  outline: 2px solid #0078d4;
+  outline: 2px solid #0078d4; /* accesibilidad teclado */
   outline-offset: 2px;
 }
+.removeIcon {
+  width: 18px;
+  height: 18px;
+  display: block;
+  user-select: none;
+  pointer-events: none;      /* el click lo toma el botón */
+  transition: transform .08s ease;
 
+  /* Opcional: mejora legibilidad sobre fondos claros/ocupados */
+  /* filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); */
+}
 /* Botón volver (opcional) */
 .backBtn {
   width: auto;
@@ -121,12 +125,17 @@
   margin-bottom: 8px;
 }
 
-
 /* ======= LISTA DE NO-IMÁGENES ======= */
 .filesSection { margin-top: 20px; }
-.filesHeader { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 8px; 
-font-family: "Segoe UI", "Segoe UI Variable", -apple-system, system-ui,
-               "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;}
+
+.filesHeader { 
+  font-size: 14px; 
+  font-weight: 600; 
+  color: #333; 
+  margin-bottom: 8px; 
+  font-family: "Segoe UI", "Segoe UI Variable", -apple-system, system-ui,
+               "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+}
 
 .fileList {
   display: grid;
@@ -151,7 +160,12 @@ font-family: "Segoe UI", "Segoe UI Variable", -apple-system, system-ui,
   padding: 5px;
 }
 
-.fileLeft { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.fileLeft { 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  min-width: 0; 
+}
 
 .fileIcon {
   width: 40px;
@@ -167,16 +181,25 @@ font-family: "Segoe UI", "Segoe UI Variable", -apple-system, system-ui,
   justify-content: center;
 }
 
-.fileText { display: flex; flex-direction: column; min-width: 0; 
+.fileText { 
+  display: flex; 
+  flex-direction: column; 
+  min-width: 0; 
 }
+
 .fileNameText {
-  font-size: 12px; color: #333; font-weight: 500;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 12px; 
+  color: #333; 
+  font-weight: 500;
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
   font-family: "Segoe UI", "Segoe UI Variable", -apple-system, system-ui, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
   // white-space: normal;        
   // overflow-wrap: anywhere;    
   // word-break: normal;
 }
+
 .fileMeta { font-size: 12px; color: #666; }
 
 /* Breakpoints */
