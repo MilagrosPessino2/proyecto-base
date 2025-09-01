@@ -38,4 +38,5 @@ export interface Archivo {
     esImagen: boolean;
     url?: string;
     fileKey: string;
+    file?: File;
 }

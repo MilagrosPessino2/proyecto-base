@@ -7,10 +7,7 @@ interface AdjuntarArchivosPreviaProps {
     setFiles: React.Dispatch<React.SetStateAction<IFileAdd[]>>;
 }
 
-
-const AdjuntarArchivos: React.FC<AdjuntarArchivosPreviaProps> = ({
-    setFiles
-}) => {
+const AdjuntarArchivos: React.FC<AdjuntarArchivosPreviaProps> = ({ setFiles }) => {
     const [archivos, setArchivos] = useState<Archivo[]>([]);
     const idCounter = useRef(0);
 
@@ -23,8 +20,8 @@ const AdjuntarArchivos: React.FC<AdjuntarArchivosPreviaProps> = ({
     useEffect(() => {
         const convertidos: IFileAdd[] = archivos.map((archivo) => ({
             id: archivo.id,
-            file: new File([], archivo.nombre), // Este campo necesita un File válido. Ajustalo si ya lo tenés.
-            ServerRelativeUrl: archivo.url, // Asumiendo que `url` representa esto.
+            file: archivo.file!, // ✅ File real
+            ServerRelativeUrl: archivo.url,
             added: false,
             deleted: false,
         }));
@@ -41,44 +38,29 @@ const AdjuntarArchivos: React.FC<AdjuntarArchivosPreviaProps> = ({
 
         for (const f of files) {
             const fileKey = `${f.name}|${f.size}|${f.lastModified}`;
-            const esDuplicado =
-                existentes.has(fileKey) || agregadosAhora.has(fileKey);
+            const esDuplicado = existentes.has(fileKey) || agregadosAhora.has(fileKey);
 
             if (esDuplicado) {
                 duplicados.push(f.name);
             } else {
                 const esImagen = isSupportedImage(f);
                 const id = `${Date.now()}-${idCounter.current++}`;
+                const url = esImagen ? URL.createObjectURL(f) : undefined;
 
-                if (esImagen) {
-                    const url = URL.createObjectURL(f);
-                    nuevos.push({
-                        id,
-                        nombre: f.name,
-                        esImagen: true,
-                        url,
-                        fileKey,
-                    });
-                } else {
-                    nuevos.push({
-                        id,
-                        nombre: f.name,
-                        esImagen: false,
-                        fileKey,
-                    });
-                }
+                nuevos.push({
+                    id,
+                    nombre: f.name,
+                    esImagen,
+                    url,
+                    fileKey,
+                    file: f, // ✅ Guarda el File original
+                });
+
                 agregadosAhora.add(fileKey);
             }
         }
 
-        if (duplicados.length) {
-            alert(
-                `Se ignoraron archivos duplicados: ${Array.from(
-                    new Set(duplicados)
-                ).join(', ')}`
-            );
-        }
-
+        
         if (nuevos.length) setArchivos((prev) => [...nuevos, ...prev]);
         e.target.value = '';
     };
@@ -88,12 +70,9 @@ const AdjuntarArchivos: React.FC<AdjuntarArchivosPreviaProps> = ({
         setArchivos([]);
     };
 
-
     return (
-
         <Stack tokens={{ childrenGap: 16 }} styles={{ root: { padding: 16 } }}>
             <div className={styles.toolbarContainer}>
-
                 <div className={styles.toolbar}>
                     <div className={styles.uploadBtnWrapper}>
                         <PrimaryButton text='Adjuntar archivos' />
@@ -105,21 +84,14 @@ const AdjuntarArchivos: React.FC<AdjuntarArchivosPreviaProps> = ({
                             className={styles.overlayInput}
                             tabIndex={-1}
                             aria-hidden='true'
-
                         />
                     </div>
-
-                    <DefaultButton
-                        text='Limpiar'
-                        onClick={handleClear}
-                        disabled={!archivos.length}
-                    />
+            
                 </div>
             </div>
         </Stack>
-
-
     );
-}
+};
 
 export default AdjuntarArchivos;
+ 

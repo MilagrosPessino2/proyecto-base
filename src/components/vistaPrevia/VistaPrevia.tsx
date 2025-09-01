@@ -11,42 +11,36 @@ interface VistaPreviaProps {
 const ICON_DELETE = '/delete.png';
 
 const VistaPrevia: React.FC<VistaPreviaProps> = ({ files, onRemove }) => {
-  const inputIdRef = useRef(
-    `file-input-${Date.now()}-${Math.random().toString(36).slice(2)}`
-  );
 
-  // Generar previews solo para imágenes válidas
+
+  // Crear URLs para las imágenes
   const imagenes = useMemo(() => {
     return files
       .filter((f) => f.file && isSupportedImage(f.file))
-      .map((f) => {
-        const objectUrl = URL.createObjectURL(f.file!);
-        return {
-          id: f.id,
-          nombre: f.file!.name,
-          url: objectUrl,
-        };
-      });
+      .map((f) => ({
+        id: f.id,
+        nombre: f.file!.name,
+        url: URL.createObjectURL(f.file!)
+      }));
   }, [files]);
 
-  // Limpiar las objectURLs generadas
+  // Limpiar blobs generados
   useEffect(() => {
+    const urls = imagenes.map((img) => img.url);
     return () => {
-      imagenes.forEach((img) => {
-        if (img.url.startsWith('blob:')) {
-          URL.revokeObjectURL(img.url);
+      urls.forEach((url) => {
+        if (url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
         }
       });
     };
   }, [imagenes]);
 
-  
-
   const mostrarGaleria = imagenes.length > 0;
 
-  const handleRemove = (id: string) => {
-    onRemove?.(id);
-  };
+//   const handleRemove = (id: string) => {
+//     onRemove?.(id);
+//   };
 
   const renderImageCard = (file: {
     id: string;
@@ -57,15 +51,12 @@ const VistaPrevia: React.FC<VistaPreviaProps> = ({ files, onRemove }) => {
       <div className={styles.imgCardInner}>
         <div className={styles.imgViewport}>
           <img className={styles.cardImg} src={file.url} alt={file.nombre} />
-          {console.log("file:",file.url)}
         </div>
       </div>
-
       <div className={styles.caption} title={file.nombre}>
         {file.nombre}
       </div>
-
-      <button
+      {/* <button
         type="button"
         className={styles.removeBtn}
         aria-label={`Eliminar ${file.nombre}`}
@@ -78,24 +69,24 @@ const VistaPrevia: React.FC<VistaPreviaProps> = ({ files, onRemove }) => {
           aria-hidden="true"
           className={styles.removeIcon}
         />
-      </button>
+      </button> */}
     </div>
   );
 
   return (
     <Stack tokens={{ childrenGap: 16 }} styles={{ root: { padding: 16 } }}>
       <div className={styles.toolbarContainer}>
-        {mostrarGaleria ? (
+        {mostrarGaleria && (
           <>
-            <h2 className={styles.imagesTitle}>Imágenes</h2>
             <div className={styles.gallery}>
               {imagenes.map((file) => renderImageCard(file))}
             </div>
           </>
-        ) : null}
+        )}
       </div>
     </Stack>
   );
 };
 
 export default VistaPrevia;
+ 
