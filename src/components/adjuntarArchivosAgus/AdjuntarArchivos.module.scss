@@ -33,11 +33,15 @@
   background: #fff;
   overflow: hidden;
   aspect-ratio: 1 / 1;
+
+  /* Reserva de espacio para la "X" (6px top + 26px hitbox ≈ 32px) */
+  --closeReservedTop: 32px;
 }
 
-/* Contenido centrado */
+/* Contenido centrado — con padding top extra para no pisar la "X" */
 .imgCardInner {
   padding: 10px;
+  padding-top: calc(10px + var(--closeReservedTop)); /* ← agregado */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -66,8 +70,8 @@
   color: #323130;
   background: linear-gradient(to top, rgba(255,255,255,.95), rgba(255,255,255,.65));
   border-top: 1px solid #eee;
-  white-space: normal;       
-  overflow-wrap: anywhere;    
+  white-space: normal;
+  overflow-wrap: anywhere;
   word-break: normal;
 }
 
@@ -82,40 +86,48 @@
   color: #323130;
 }
 
-/* Botón eliminar (flotante) — ahora usa icono PNG */
+/* Botón eliminar (flotante) — sin z-index */
 .removeBtn {
   position: absolute;
   top: 6px;
   right: 6px;
-  padding: 4px;           /* aumenta el área de click, NO visible */
+  padding: 4px;
   border: none;
-  background: transparent; /* 👈 fondo transparente */
-  border-radius: 0;         /* sin círculo */
+  background: transparent;
+  border-radius: 0;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   opacity: .95;
   transition: transform .08s ease, opacity .15s ease;
-  z-index: 3;
 }
 .imgCard:hover .removeBtn { opacity: 1; }
 .removeBtn:hover .removeIcon { transform: scale(1.06); }
 .removeBtn:focus-visible {
-  outline: 2px solid #0078d4; /* accesibilidad teclado */
+  outline: 2px solid #0078d4;
   outline-offset: 2px;
 }
+.visuallyHidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden; clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap; border: 0; padding: 0; margin: -1px;
+}
+
+/* Para que el label se comporte bien con el botón de Fluent */
+.labelButton {
+  display: inline-block;
+} 
 .removeIcon {
   width: 18px;
   height: 18px;
   display: block;
   user-select: none;
-  pointer-events: none;      /* el click lo toma el botón */
+  pointer-events: none; /* el click lo toma el botón */
   transition: transform .08s ease;
-
-  /* Opcional: mejora legibilidad sobre fondos claros/ocupados */
-  /* filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); */
 }
+
 /* Botón volver (opcional) */
 .backBtn {
   width: auto;
@@ -128,13 +140,23 @@
 /* ======= LISTA DE NO-IMÁGENES ======= */
 .filesSection { margin-top: 20px; }
 
-.filesHeader { 
-  font-size: 14px; 
-  font-weight: 600; 
-  color: #333; 
-  margin-bottom: 8px; 
+.filesHeader {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
   font-family: "Segoe UI", "Segoe UI Variable", -apple-system, system-ui,
                "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+}
+.imagesTitle {
+  /* Forzamos sans-serif para que no tome el serif del user agent */
+  font-family: "Segoe UI Variable", "Segoe UI", -apple-system, system-ui,
+               "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  font-weight: 700;   /* podés bajar a 600 si lo querés menos pesado */
+  font-size: 20px;    /* ajustá a gusto (18–22px) */
+  line-height: 1.25;
+  letter-spacing: 0.2px;
+  margin: 0 0 8px;
 }
 
 .fileList {
@@ -144,10 +166,10 @@
 }
 
 .removeBtnInline {
-  position: static;    
+  position: static;
   top: auto;
   right: auto;
-  margin-left: 8px;     
+  margin-left: 8px;
 }
 
 .fileItem {
@@ -160,11 +182,11 @@
   padding: 5px;
 }
 
-.fileLeft { 
-  display: flex; 
-  align-items: center; 
-  gap: 10px; 
-  min-width: 0; 
+.fileLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .fileIcon {
@@ -181,24 +203,28 @@
   justify-content: center;
 }
 
-.fileText { 
-  display: flex; 
-  flex-direction: column; 
-  min-width: 0; 
+.fileText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .fileNameText {
-  font-size: 12px; 
-  color: #333; 
+  font-size: 12px;
+  color: #333;
   font-weight: 500;
-  white-space: nowrap; 
-  overflow: hidden; 
+  white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
   font-family: "Segoe UI", "Segoe UI Variable", -apple-system, system-ui, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
-  // white-space: normal;        
-  // overflow-wrap: anywhere;    
-  // word-break: normal;
 }
+.uploadBtnWrapper { position: relative; display: inline-block; }
+.overlayInput {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  opacity: 0; cursor: pointer;
+}
+
 
 .fileMeta { font-size: 12px; color: #666; }
 

@@ -2,22 +2,27 @@ import React, { useRef, useState, useEffect } from 'react';
 import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
 import styles from './AdjuntarArchivos.module.scss';
 import { Stack } from '@fluentui/react';
+import { isSupportedImage, ACCEPT_IMAGES } from '../../utils/constants';
 
 interface Archivo {
     id: string;
     nombre: string;
     esImagen: boolean;
     url?: string;
-    fp: string;
+    fileKey: string;
 }
 
-// Ruta al PNG dentro de /public (ajustá si lo pusiste en /public/icons)
-const ICON_DELETE = '/delete.png'; // o '/icons/delete.png'
+const ICON_DELETE = '/delete.png';
 
 const AdjuntarArchivos: React.FC = () => {
     const [archivos, setArchivos] = useState<Archivo[]>([]);
-    const ref = useRef<HTMLInputElement>(null);
-    const seq = useRef(0);
+    const idCounter = useRef(0);
+    // id único para asociar label ↔ input (sin dependencias de Fluent)
+    const inputIdRef = useRef(
+        `file-input-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    );
+
+    const [mostrarGaleria, setMostrarGaleria] = useState(false);
 
     useEffect(() => {
         return () => {
@@ -26,34 +31,51 @@ const AdjuntarArchivos: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const handleUpload = () => ref.current?.click();
+    useEffect(() => {
+        const hayImagenes = archivos.some((a) => a.esImagen && a.url);
+        setMostrarGaleria(hayImagenes);
+    }, [archivos]);
+
+    // ⬇️ sin .click(): el <label> dispara el input nativo
+    // const handleUpload = () => fileInputRef.current?.click();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files ?? []);
         const nuevos: Archivo[] = [];
-        const existentes = new Set(archivos.map((a) => a.fp));
+        const existentes = new Set(archivos.map((a) => a.fileKey));
         const agregadosAhora = new Set<string>();
         const duplicados: string[] = [];
 
         for (const f of files) {
-            const fp = `${f.name}|${f.size}|${f.lastModified}`;
-            if (existentes.has(fp) || agregadosAhora.has(fp)) {
+            const fileKey = `${f.name}|${f.size}|${f.lastModified}`;
+            const esDuplicado =
+                existentes.has(fileKey) || agregadosAhora.has(fileKey);
+
+            if (esDuplicado) {
                 duplicados.push(f.name);
-                continue;
-            }
-
-            const esImagen =
-                /image\/(jpeg|png)/i.test(f.type) ||
-                /\.(jpe?g|png)$/i.test(f.name);
-            const id = `${Date.now()}-${seq.current++}`;
-
-            if (esImagen) {
-                const url = URL.createObjectURL(f);
-                nuevos.push({ id, nombre: f.name, esImagen: true, url, fp });
             } else {
-                nuevos.push({ id, nombre: f.name, esImagen: false, fp });
+                const esImagen = isSupportedImage(f);
+                const id = `${Date.now()}-${idCounter.current++}`;
+
+                if (esImagen) {
+                    const url = URL.createObjectURL(f);
+                    nuevos.push({
+                        id,
+                        nombre: f.name,
+                        esImagen: true,
+                        url,
+                        fileKey,
+                    });
+                } else {
+                    nuevos.push({
+                        id,
+                        nombre: f.name,
+                        esImagen: false,
+                        fileKey,
+                    });
+                }
+                agregadosAhora.add(fileKey);
             }
-            agregadosAhora.add(fp);
         }
 
         if (duplicados.length) {
@@ -81,25 +103,70 @@ const AdjuntarArchivos: React.FC = () => {
         setArchivos([]);
     };
 
-    // Render
-    const imagenes = archivos.filter((a) => a.esImagen && a.url);
+    const imagenes = archivos
+        .filter((a) => a.esImagen && a.url)
+        .map((a) => ({ id: a.id, nombre: a.nombre, url: a.url as string }));
+
+    const renderImageCard = (file: {
+        id: string;
+        nombre: string;
+        url: string;
+    }) => (
+        <div className={styles.imgCard} key={file.id}>
+            <div className={styles.imgCardInner}>
+                <img
+                    className={styles.cardImg}
+                    src={file.url}
+                    alt={file.nombre}
+                />
+            </div>
+            <div className={styles.caption} title={file.nombre}>
+                {file.nombre}
+            </div>
+            <button
+                type='button'
+                className={styles.removeBtn}
+                aria-label={`Eliminar ${file.nombre}`}
+                title='Eliminar'
+                onClick={() => handleRemove(file.id)}
+            >
+                <img
+                    src={ICON_DELETE}
+                    alt=''
+                    aria-hidden='true'
+                    className={styles.removeIcon}
+                />
+            </button>
+        </div>
+    );
 
     return (
         <Stack tokens={{ childrenGap: 16 }} styles={{ root: { padding: 16 } }}>
             <div className={styles.toolbarContainer}>
+                {/* Input accesible, oculto visualmente pero asociado al label */}
                 <input
-                    ref={ref}
+                    id={inputIdRef.current}
                     type='file'
                     multiple
+                    accept={ACCEPT_IMAGES}
                     onChange={handleChange}
-                    style={{ display: 'none' }}
+                    className={styles.visuallyHidden}
                 />
 
                 <div className={styles.toolbar}>
-                    <PrimaryButton
-                        text='Adjuntar archivos'
-                        onClick={handleUpload}
-                    />
+                    <div className={styles.uploadBtnWrapper}>
+                        <PrimaryButton text='Adjuntar archivos' />
+                        <input
+                            type='file'
+                            multiple
+                            accept={ACCEPT_IMAGES}
+                            onChange={handleChange}
+                            className={styles.overlayInput}
+                            tabIndex={-1} // evita foco “fantasma”
+                            aria-hidden='true' // el foco real queda en el botón
+                        />
+                    </div>
+
                     <DefaultButton
                         text='Limpiar'
                         onClick={handleClear}
@@ -107,44 +174,14 @@ const AdjuntarArchivos: React.FC = () => {
                     />
                 </div>
 
-                {/* Galería de imágenes */}
-                {imagenes.length > 0 && (
-                    <div className={styles.gallery}>
-                        {imagenes.map((file) => (
-                            <div className={styles.imgCard} key={file.id}>
-                                <div className={styles.imgCardInner}>
-                                    <img
-                                        className={styles.cardImg}
-                                        src={file.url}
-                                        alt={file.nombre}
-                                    />
-                                </div>
-                                <div
-                                    className={styles.caption}
-                                    title={file.nombre}
-                                >
-                                    {file.nombre}
-                                </div>
-
-                                {/* Botón eliminar con PNG desde /public */}
-                                <button
-                                    type='button'
-                                    className={styles.removeBtn}
-                                    aria-label={`Eliminar ${file.nombre}`}
-                                    title='Eliminar'
-                                    onClick={() => handleRemove(file.id)}
-                                >
-                                    <img
-                                        src={ICON_DELETE}
-                                        alt=''
-                                        aria-hidden='true'
-                                        className={styles.removeIcon}
-                                    />
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                {mostrarGaleria ? (
+                    <>
+                        <h2 className={styles.imagesTitle}>Imágenes</h2>
+                        <div className={styles.gallery}>
+                            {imagenes.map((file) => renderImageCard(file))}
+                        </div>
+                    </>
+                ) : null}
             </div>
         </Stack>
     );
