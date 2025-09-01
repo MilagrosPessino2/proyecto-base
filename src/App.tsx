@@ -8,16 +8,16 @@
 
 // export default App;
 
-import { Routes, Route } from 'react-router-dom'
-import ProtectedRoute from './components/ProtectedRoute'
-import { Roles } from './utils/constants'
-import AdminPage from './components/AdminPage'
-import AdjuntarArchivos from './components/adjuntarArchivosAgus/AdjuntarArchivos'
-import Form from './components/form/Form'
-import Home from './components/Home'
+import { Routes, Route } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
+import { Roles } from './utils/constants';
+import AdminPage from './components/AdminPage';
+import AdjuntarArchivos from './components/adjuntarArchivosAgus/AdjuntarArchivos';
+import Form from './components/form/Form';
+import Home from './components/Home';
 
-const mockUserGroups = ['ADMINISTRADORES'] // Se puede cargar con contexto o API
-const isLoading = false // Cambia según la lógica real
+const mockUserGroups = ['ADMINISTRADORES']; // Se puede cargar con contexto o API
+const isLoading = false; // Cambia según la lógica real
 
 const App = () => {
     return (
@@ -39,7 +39,7 @@ const App = () => {
                 }
             />
         </Routes>
-    )
-}
+    );
+};
 
-export default App
+export default App;

@@ -1,10 +1,10 @@
 // src/home/Home.tsx
-import * as React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Stack, PrimaryButton } from '@fluentui/react'
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Stack, PrimaryButton } from '@fluentui/react';
 
 const Home: React.FC = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     return (
         <div
@@ -29,10 +29,10 @@ const Home: React.FC = () => {
                 />
             </Stack>
         </div>
-    )
-}
+    );
+};
 
-export default Home
+export default Home;
 
 // import React, { useRef, useState, useEffect } from 'react';
 // import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';

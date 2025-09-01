@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "esnext",
-    "jsx": "react-jsx",              // para React 17+ con "automatic"
-    "moduleResolution": "node",
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",  
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true

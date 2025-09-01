@@ -1,46 +1,46 @@
-import React, { useMemo, useRef, useState, useEffect } from 'react'
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import {
     TextField,
     ITextFieldProps,
     ITextFieldStyles,
-} from '@fluentui/react/lib/TextField'
-import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown'
-import { DatePicker } from '@fluentui/react/lib/DatePicker'
-import { PrimaryButton, DefaultButton } from '@fluentui/react/lib/Button'
-import styles from './Form.module.scss'
-import { Stack } from '@fluentui/react'
-import { useNavigate } from 'react-router-dom'
+} from '@fluentui/react/lib/TextField';
+import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
+import { DatePicker } from '@fluentui/react/lib/DatePicker';
+import { PrimaryButton, DefaultButton } from '@fluentui/react/lib/Button';
+import styles from './Form.module.scss';
+import { Stack } from '@fluentui/react';
+import { useNavigate } from 'react-router-dom';
 
 interface FormData {
-    nombre: string
-    categoria?: string | number
-    fecha: Date | null
+    nombre: string;
+    categoria?: string | number;
+    fecha: Date | null;
 }
 
 // Constantes para persistencia
-const STORAGE_KEY = 'form_datos_v1'
-const PERSIST_IN: 'local' | 'session' = 'session'
+const STORAGE_KEY = 'form_datos_v1';
+const PERSIST_IN: 'local' | 'session' = 'session';
 const storage =
-    PERSIST_IN === 'session' ? window.localStorage : window.sessionStorage
-const REQUIRED_MSG = 'Esta campo es obligatorio.'
+    PERSIST_IN === 'session' ? window.localStorage : window.sessionStorage;
+const REQUIRED_MSG = 'Esta campo es obligatorio.';
 
 // Cargar datos guardados
 function loadPersisted(): FormData | null {
     try {
-        const raw = storage.getItem(STORAGE_KEY)
-        if (!raw) return null
+        const raw = storage.getItem(STORAGE_KEY);
+        if (!raw) return null;
         const parsed = JSON.parse(raw) as {
-            nombre: string
-            categoria?: string | number
-            fecha: string | null
-        }
+            nombre: string;
+            categoria?: string | number;
+            fecha: string | null;
+        };
         return {
             nombre: parsed.nombre ?? '',
             categoria: parsed.categoria,
             fecha: parsed.fecha ? new Date(parsed.fecha) : null,
-        }
+        };
     } catch {
-        return null
+        return null;
     }
 }
 
@@ -53,12 +53,12 @@ function savePersisted(data: FormData) {
             categoria: data.categoria,
             fecha: data.fecha ? data.fecha.toISOString() : null,
         })
-    )
+    );
 }
 
 // Borrar datos guardados
 function clearPersisted() {
-    storage.removeItem(STORAGE_KEY)
+    storage.removeItem(STORAGE_KEY);
 }
 
 const Form: React.FC<{ onSave?: (data: FormData) => void }> = ({ onSave }) => {
@@ -66,21 +66,21 @@ const Form: React.FC<{ onSave?: (data: FormData) => void }> = ({ onSave }) => {
         nombre: '',
         categoria: undefined,
         fecha: null,
-    }
-    const [data, setData] = useState<FormData>(initial)
-    const [submitted, setSubmitted] = useState(false)
-    const [rev, setRev] = useState(0) // remonta el Dropdown al limpiar
-    const navigate = useNavigate()
+    };
+    const [data, setData] = useState<FormData>(initial);
+    const [submitted, setSubmitted] = useState(false);
+    const [rev, setRev] = useState(0); // remonta el Dropdown al limpiar
+    const navigate = useNavigate();
 
     // Persistencia con debounce, debound es un retardo para no guardar en cada cambio
-    const saveTmr = useRef<number | null>(null)
+    const saveTmr = useRef<number | null>(null);
     useEffect(() => {
-        if (saveTmr.current) window.clearTimeout(saveTmr.current)
-        saveTmr.current = window.setTimeout(() => savePersisted(data), 250)
+        if (saveTmr.current) window.clearTimeout(saveTmr.current);
+        saveTmr.current = window.setTimeout(() => savePersisted(data), 250);
         return () => {
-            if (saveTmr.current) window.clearTimeout(saveTmr.current)
-        }
-    }, [data])
+            if (saveTmr.current) window.clearTimeout(saveTmr.current);
+        };
+    }, [data]);
 
     const options: IDropdownOption[] = useMemo(
         () => [
@@ -89,46 +89,46 @@ const Form: React.FC<{ onSave?: (data: FormData) => void }> = ({ onSave }) => {
             { key: 'op3', text: 'Opción 3' },
         ],
         []
-    )
+    );
     // Validaciones
     const errors = {
         nombre: !data.nombre.trim() ? REQUIRED_MSG : undefined,
         categoria: data.categoria === undefined ? REQUIRED_MSG : undefined,
         fecha: !data.fecha ? REQUIRED_MSG : undefined,
-    }
-    const isValid = !errors.nombre && !errors.categoria && !errors.fecha
+    };
+    const isValid = !errors.nombre && !errors.categoria && !errors.fecha;
 
     // Limpiar formulario
     const reset = () => {
-        setData({ nombre: '', categoria: undefined, fecha: null })
-        setSubmitted(false)
-        clearPersisted()
-        setRev((r) => r + 1) // limpia select re-montando
-    }
+        setData({ nombre: '', categoria: undefined, fecha: null });
+        setSubmitted(false);
+        clearPersisted();
+        setRev((r) => r + 1); // limpia select re-montando
+    };
     // Envío de formulario
     const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        setSubmitted(true)
-        if (!isValid) return
+        e.preventDefault();
+        setSubmitted(true);
+        if (!isValid) return;
 
-        onSave?.(data)
+        onSave?.(data);
 
         // Mostrar alerta con los datos ingresados
         const categoriaTexto =
             options.find((o) => o.key === data.categoria)?.text ??
-            (data.categoria !== undefined ? String(data.categoria) : '')
-        const fechaTexto = data.fecha ? data.fecha.toLocaleDateString() : ''
+            (data.categoria !== undefined ? String(data.categoria) : '');
+        const fechaTexto = data.fecha ? data.fecha.toLocaleDateString() : '';
 
         alert(
             `Guardado:
             - Nombre: ${data.nombre}
             - Categoría: ${categoriaTexto}
             - Fecha: ${fechaTexto}`
-        )
+        );
 
         // Limpiar storage y formulario tras guardar
-        reset()
-    }
+        reset();
+    };
 
     // Estilos del TextField interno del DatePicker cuando hay error (sin !important)
     const dateTextFieldStyles: Partial<ITextFieldStyles> | undefined =
@@ -142,13 +142,13 @@ const Form: React.FC<{ onSave?: (data: FormData) => void }> = ({ onSave }) => {
                       },
                   },
               }
-            : undefined
+            : undefined;
 
     // Props para el TextField interno del DatePicker
     const dateTextFieldProps: Partial<ITextFieldProps> = {
         errorMessage: submitted ? errors.fecha : undefined,
         styles: dateTextFieldStyles,
-    }
+    };
 
     return (
         <Stack tokens={{ childrenGap: 16 }} styles={{ root: { padding: 16 } }}>
@@ -226,7 +226,7 @@ const Form: React.FC<{ onSave?: (data: FormData) => void }> = ({ onSave }) => {
                 </form>
             </div>
         </Stack>
-    )
-}
+    );
+};
 
-export default Form
+export default Form;
