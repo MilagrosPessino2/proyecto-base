@@ -1,16 +1,26 @@
-import { DefaultButton, PrimaryButton, Stack } from "@fluentui/react";
-import { ACCEPT_IMAGES, Archivo, IFileAdd, isSupportedImage } from "../../utils/constants";
+import { DefaultButton, PrimaryButton, Stack } from '@fluentui/react';
+import {
+    ACCEPT_IMAGES,
+    Archivo,
+    IFileAdd,
+    isSupportedImage,
+} from '../../utils/constants';
 import styles from './AdjuntarArchivos.module.scss';
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
+// Props para comunicar los archivos seleccionados al componente padre
 interface AdjuntarArchivosPreviaProps {
     setFiles: React.Dispatch<React.SetStateAction<IFileAdd[]>>;
 }
 
-const AdjuntarArchivos: React.FC<AdjuntarArchivosPreviaProps> = ({ setFiles }) => {
-    const [archivos, setArchivos] = useState<Archivo[]>([]);
-    const idCounter = useRef(0);
+const AdjuntarArchivos: React.FC<AdjuntarArchivosPreviaProps> = ({
+    setFiles,
+}) => {
+    const [archivos, setArchivos] = useState<Archivo[]>([]); // Estado local para manejar los archivos
+    const idCounter = useRef(0); // Contador para generar IDs únicos
 
+    // Limpiar URLs de blobs al desmontar el componente,
+    // un blob es una URL temporal para previsualizar archivos
     useEffect(() => {
         return () => {
             archivos.forEach((a) => a.url && URL.revokeObjectURL(a.url));
@@ -18,6 +28,7 @@ const AdjuntarArchivos: React.FC<AdjuntarArchivosPreviaProps> = ({ setFiles }) =
     }, []);
 
     useEffect(() => {
+        // Convertir los archivos locales al formato esperado por el componente padre
         const convertidos: IFileAdd[] = archivos.map((archivo) => ({
             id: archivo.id,
             file: archivo.file!, // ✅ File real
@@ -29,6 +40,7 @@ const AdjuntarArchivos: React.FC<AdjuntarArchivosPreviaProps> = ({ setFiles }) =
         setFiles(convertidos);
     }, [archivos]);
 
+    // Manejar la selección de archivos
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files ?? []);
         const nuevos: Archivo[] = [];
@@ -38,7 +50,8 @@ const AdjuntarArchivos: React.FC<AdjuntarArchivosPreviaProps> = ({ setFiles }) =
 
         for (const f of files) {
             const fileKey = `${f.name}|${f.size}|${f.lastModified}`;
-            const esDuplicado = existentes.has(fileKey) || agregadosAhora.has(fileKey);
+            const esDuplicado =
+                existentes.has(fileKey) || agregadosAhora.has(fileKey);
 
             if (esDuplicado) {
                 duplicados.push(f.name);
@@ -60,11 +73,10 @@ const AdjuntarArchivos: React.FC<AdjuntarArchivosPreviaProps> = ({ setFiles }) =
             }
         }
 
-        
         if (nuevos.length) setArchivos((prev) => [...nuevos, ...prev]);
         e.target.value = '';
     };
-
+    // Limpiar todos los archivos y revocar URLs de blobs
     const handleClear = () => {
         archivos.forEach((a) => a.url && URL.revokeObjectURL(a.url));
         setArchivos([]);
@@ -86,7 +98,6 @@ const AdjuntarArchivos: React.FC<AdjuntarArchivosPreviaProps> = ({ setFiles }) =
                             aria-hidden='true'
                         />
                     </div>
-            
                 </div>
             </div>
         </Stack>
@@ -94,4 +105,3 @@ const AdjuntarArchivos: React.FC<AdjuntarArchivosPreviaProps> = ({ setFiles }) =
 };
 
 export default AdjuntarArchivos;
- 

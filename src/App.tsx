@@ -32,17 +32,15 @@ const App = () => {
         <Routes>
             {/* <Route path='/' element={<ADJ />} /> */}
             <Route path='/' element={<Home />} />
-            <Route path='/adjuntar-archivo' element={
-                <>
-                    <AdjuntarArchivos
-                        setFiles={setFiles}
-                    />
-                    <VistaPrevia
-                        files={files}
-                    />
-                </>
-
-            } />
+            <Route
+                path='/adjuntar-archivo'
+                element={
+                    <>
+                        <AdjuntarArchivos setFiles={setFiles} />
+                        <VistaPrevia files={files} />
+                    </>
+                }
+            />
             <Route path='/form' element={<Form />} />
             <Route
                 path='/admin'
