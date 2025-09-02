@@ -49,30 +49,25 @@ const VistaPrevia: React.FC<VistaPreviaProps> = ({ files, onRemove }) => {
         <div className={styles.imgCard} key={file.id}>
             <div className={styles.imgCardInner}>
                 <div className={styles.imgViewport}>
-                    <img
-                        className={styles.cardImg}
-                        src={file.url}
-                        alt={file.nombre}
-                    />
+                    <a
+                        href={file.url}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className={styles.imgLink}
+                        aria-label={`Abrir ${file.nombre} en una nueva pestaña`}
+                        title='Abrir en una nueva pestaña'
+                    >
+                        <img
+                            className={styles.cardImg}
+                            src={file.url}
+                            alt={file.nombre}
+                        />
+                    </a>
                 </div>
             </div>
             <div className={styles.caption} title={file.nombre}>
                 {file.nombre}
             </div>
-            {/* <button
-                type="button"
-                className={styles.removeBtn}
-                aria-label={`Eliminar ${file.nombre}`}
-                title="Eliminar"
-                onClick={() => handleRemove(file.id)}
-              >
-                <img
-                  src={ICON_DELETE}
-                  alt=""
-                  aria-hidden="true"
-                  className={styles.removeIcon}
-                />
-              </button> */}
         </div>
     );
 
