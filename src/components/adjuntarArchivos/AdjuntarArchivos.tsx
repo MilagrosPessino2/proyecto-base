@@ -73,13 +73,8 @@ const AdjuntarArchivos: React.FC<AdjuntarArchivosPreviaProps> = ({
             }
         }
 
-        if (nuevos.length) setArchivos((prev) => [...nuevos, ...prev]);
+        if (nuevos.length) setArchivos((prev) => [...nuevos, ...prev]); // Añadir al inicio
         e.target.value = '';
-    };
-    // Limpiar todos los archivos y revocar URLs de blobs
-    const handleClear = () => {
-        archivos.forEach((a) => a.url && URL.revokeObjectURL(a.url));
-        setArchivos([]);
     };
 
     return (
