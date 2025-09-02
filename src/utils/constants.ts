@@ -3,27 +3,27 @@ export const Roles = {
     OTRO: 'OTRO',
 } as const;
 export type Role = (typeof Roles)[keyof typeof Roles];
+// Enum de formatos permitidos
+export enum Formatos {
+    JPEG = 'jpeg',
+    JPG = 'jpg',
+    PNG = 'png',
+}
 
-export const MIME_BY_EXT = {
-    jpg: 'image/jpeg',
-    jpeg: 'image/jpeg',
-    png: 'image/png',
-    pdf: 'application/pdf',
-} as const;
-export type ImageExt = keyof typeof MIME_BY_EXT;
-export type ImageMime = (typeof MIME_BY_EXT)[ImageExt];
+export const ACCEPT_IMAGES = Object.values(Formatos)
+    .map((ext) => `.${ext}`)
+    .join(',');
 
-const EXTS = new Set<ImageExt>(Object.keys(MIME_BY_EXT) as ImageExt[]);
-const MIMES = new Set<ImageMime>(Object.values(MIME_BY_EXT));
+// Función auxiliar para obtener extensión
+function getFileExtension(nombre: string): string {
+    return (nombre.split('.').pop() || '').toLowerCase();
+}
 
-export const ACCEPT_IMAGES = Array.from(MIMES).join(',');
-
-export const getFileExt = (n: string) =>
-    (n.split('.').pop() || '').toLowerCase();
-
-export const isSupportedImage = (f: File) =>
-    MIMES.has((f.type || '').toLowerCase() as ImageMime) ||
-    EXTS.has(getFileExt(f.name) as ImageExt);
+// Validador
+export function isSupportedImage(file: File): boolean {
+    const ext = getFileExtension(file.name);
+    return Object.values(Formatos).includes(ext as Formatos);
+}
 
 export interface IFileAdd {
     id: string;
