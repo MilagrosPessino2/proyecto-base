@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "esnext",
-    "jsx": "react-jsx",              // para React 17+ con "automatic"
-    "moduleResolution": "node",
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "moduleResolution": "Bundler",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
