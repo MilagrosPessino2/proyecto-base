@@ -14,6 +14,8 @@ import { Roles } from './utils/constants';
 import AdminPage from './components/AdminPage';
 import Home from './components/Home';
 import CrearWord from './components/crearWord/CrearWord';
+// App.tsx
+// import CrearWord from './components/crearWord/CrearWord';
 
 const mockUserGroups = ['ADMINISTRADORES']; // Se puede cargar con contexto o API
 const isLoading = false; // Cambia según la lógica real
@@ -21,8 +23,9 @@ const isLoading = false; // Cambia según la lógica real
 const App = () => {
     return (
         <Routes>
-            <Route path='/' element={<Home />} />
-            <Route path='/crear-word' element={<CrearWord />} />
+            {/* <Route path='/' element={<Home />} /> */}
+            <Route path='/' element={<CrearWord />} />
+            {/* <Route path='/crear-word' element={<CrearWord />} /> */}
             <Route
                 path='/admin'
                 element={
