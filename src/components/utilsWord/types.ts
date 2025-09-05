@@ -1,6 +1,7 @@
 export interface NoveltyItem {
     titulo: string;
     resumen: string;
+    imagenes?: string[];
 }
 
 export interface areaSection {

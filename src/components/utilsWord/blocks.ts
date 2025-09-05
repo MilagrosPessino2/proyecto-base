@@ -3,18 +3,18 @@ import {
     BorderStyle,
     Footer,
     Header,
+    ImageRun,
     Paragraph,
     ShadingType,
     Table,
     TableCell,
+    TableLayoutType,
     TableRow,
     TextRun,
     UnderlineType,
     WidthType,
-    TableLayoutType, // 👈 necesario para ancho 100% real
 } from 'docx';
 import { COLORS } from './colors';
-/** Paleta base (podés mover a colors.ts si preferís) */
 
 /** Header reutilizable (texto a la derecha) */
 export function buildHeader(label: string): Header {
@@ -27,7 +27,7 @@ export function buildHeader(label: string): Header {
                         text: label,
                         color: COLORS.greyText,
                         bold: true,
-                        size: 20, // ~9pt (opcional)
+                        size: 22, // ~11pt
                     }),
                 ],
             }),
@@ -45,7 +45,7 @@ export function buildFooter(label: string): Footer {
                     new TextRun({
                         text: label,
                         color: COLORS.greyText,
-                        size: 20, // ~9pt (opcional)
+                        size: 20, // ~10pt
                     }),
                 ],
             }),
@@ -53,14 +53,12 @@ export function buildFooter(label: string): Footer {
     });
 }
 
-/** Franja "area" con fondo celeste y borde azul
- *  Estilo: bold, ~15px (≈ 11.25pt => size:22), color negro
- */
+/** Franja "area" con fondo celeste y borde azul */
 export function makeareaBox(areaTitle: string): Table {
     return new Table({
         width: { size: 100, type: WidthType.PERCENTAGE },
-        layout: TableLayoutType.FIXED, // ancho 100% real
-        alignment: AlignmentType.LEFT, // pegado al margen
+        layout: TableLayoutType.FIXED,
+        alignment: AlignmentType.LEFT,
         rows: [
             new TableRow({
                 children: [
@@ -70,7 +68,7 @@ export function makeareaBox(areaTitle: string): Table {
                                 style: BorderStyle.SINGLE,
                                 size: 8,
                                 color: COLORS.areaBorder,
-                            }, // fino
+                            },
                             bottom: {
                                 style: BorderStyle.SINGLE,
                                 size: 8,
@@ -92,8 +90,7 @@ export function makeareaBox(areaTitle: string): Table {
                             fill: COLORS.areaFill,
                             color: 'auto',
                         },
-                        // margen interno mínimo para no “pegar” al borde
-                        margins: { top: 60, bottom: 60, left: 80, right: 80 }, // twips
+                        margins: { top: 60, bottom: 60, left: 80, right: 80 },
                         children: [
                             new Paragraph({
                                 children: [
@@ -101,10 +98,10 @@ export function makeareaBox(areaTitle: string): Table {
                                         text: areaTitle,
                                         bold: true,
                                         color: '000000',
-                                        size: 30, // ≈ 15px
+                                        size: 30,
                                     }),
                                 ],
-                                spacing: { before: 0, after: 0 }, // compacto
+                                spacing: { before: 0, after: 0 },
                             }),
                         ],
                     }),
@@ -122,9 +119,9 @@ export function thinSeparator(): Paragraph {
                 style: BorderStyle.SINGLE,
                 size: 8,
                 color: COLORS.thinLine,
-            }, // ~1pt
+            },
         },
-        spacing: { before: 200, after: 200 },
+        spacing: { before: 120, after: 120 },
     });
 }
 
@@ -136,7 +133,7 @@ export function areaHeading(text: string): Paragraph {
                 text: text.toUpperCase(),
                 bold: true,
                 color: '000000',
-                size: 22, // ≈ 11px
+                size: 22,
             }),
         ],
         spacing: { before: 200, after: 100 },
@@ -159,18 +156,108 @@ export function noveltyTitle(text: string): Paragraph {
     });
 }
 
-/** Detalle/Descripción del ítem
- *  Estilo: gris, un poco más chico para jerarquía (≈ 10pt => size:20)
- */
+/** Detalle/Descripción del ítem */
 export function noveltyDetail(text: string): Paragraph {
     return new Paragraph({
-        children: [
-            new TextRun({
-                text,
-                color: COLORS.greyText,
-                size: 22, // ≈ 10pt
-            }),
-        ],
+        children: [new TextRun({ text, color: COLORS.greyText, size: 22 })],
         spacing: { after: 120 },
+    });
+}
+
+/** Galería de imágenes (2 por fila por defecto)
+ *  Recibe binarios (Uint8Array) y arma una tabla con bordes finos por imagen.
+ */
+export function imageGallery(
+    imageData: Uint8Array[],
+    opts?: { perRow?: number; width?: number; height?: number }
+): Table {
+    const perRow = opts?.perRow ?? 2;
+    const w = opts?.width ?? 250; // px aproximados en docx
+    const h = opts?.height ?? 160;
+
+    // Chunks de perRow
+    const rows: TableRow[] = [];
+    for (let i = 0; i < imageData.length; i += perRow) {
+        const slice = imageData.slice(i, i + perRow);
+
+        const cells = slice.map(
+            (data) =>
+                new TableCell({
+                    borders: {
+                        top: {
+                            style: BorderStyle.SINGLE,
+                            size: 8,
+                            color: COLORS.thinLine,
+                        },
+                        bottom: {
+                            style: BorderStyle.SINGLE,
+                            size: 8,
+                            color: COLORS.thinLine,
+                        },
+                        left: {
+                            style: BorderStyle.SINGLE,
+                            size: 8,
+                            color: COLORS.thinLine,
+                        },
+                        right: {
+                            style: BorderStyle.SINGLE,
+                            size: 8,
+                            color: COLORS.thinLine,
+                        },
+                    },
+                    margins: { top: 120, bottom: 120, left: 120, right: 120 },
+                    children: [
+                        new Paragraph({
+                            alignment: AlignmentType.CENTER,
+                            children: [
+                                new ImageRun({
+                                    data,
+                                    transformation: { width: w, height: h },
+                                    type: 'png', // or 'jpeg' depending on your image format
+                                }),
+                            ],
+                        }),
+                    ],
+                })
+        );
+
+        // Si la última fila no completa el perRow, agregamos celdas vacías para mantener ancho
+        while (cells.length < perRow) {
+            cells.push(
+                new TableCell({
+                    borders: {
+                        top: {
+                            style: BorderStyle.SINGLE,
+                            size: 8,
+                            color: COLORS.thinLine,
+                        },
+                        bottom: {
+                            style: BorderStyle.SINGLE,
+                            size: 8,
+                            color: COLORS.thinLine,
+                        },
+                        left: {
+                            style: BorderStyle.SINGLE,
+                            size: 8,
+                            color: COLORS.thinLine,
+                        },
+                        right: {
+                            style: BorderStyle.SINGLE,
+                            size: 8,
+                            color: COLORS.thinLine,
+                        },
+                    },
+                    children: [new Paragraph({})],
+                })
+            );
+        }
+
+        rows.push(new TableRow({ children: cells }));
+    }
+
+    return new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        layout: TableLayoutType.FIXED,
+        rows,
     });
 }
