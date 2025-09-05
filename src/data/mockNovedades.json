@@ -1,0 +1,33 @@
+{
+  "area": "Diseño y comunicación",
+  "novedad": [
+    {
+      "gerencia": "MANTENIMIENTO",
+      "items": [
+        {
+          "titulo": "ESTA ES UNA NOVEDAD DE SA",
+          "resumen": "Prueba de Novedad novedosa"
+        },
+        {
+          "titulo": "OTRA NOVEDAD",
+          "resumen": "Elevo una Novedad para que genere en Elevadas"
+        },
+        { "titulo": "TEST", "resumen": "prueba" },
+        { "titulo": "EXTRA (no debería verse)", "resumen": "supera el máximo" }
+      ]
+    },
+    {
+      "gerencia": "NUEVA area DE PRUEBA",
+      "items": [
+        { "titulo": "ELEV", "resumen": "aa" },
+        { "titulo": "NOVEDAD 3/9", "resumen": "res" }
+      ]
+    },
+    {
+      "gerencia": "DISEÑO Y COMUNICACION",
+      "items": [
+        { "titulo": "NOVEDADNUEVA02/09", "resumen": "soy un resumen resumido" }
+      ]
+    }
+  ]
+}

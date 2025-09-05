@@ -13,9 +13,6 @@ const NovedadesPage: React.FC = () => {
                             alt='YPF'
                             className={styles.logo}
                         />
-                        <span className={styles.appName}>
-                            Generador de Novedades
-                        </span>
                     </div>
                     {/* por si querés acciones futuras a la derecha */}
                     <nav className={styles.actions} />
@@ -24,9 +21,7 @@ const NovedadesPage: React.FC = () => {
 
             <main className={styles.main}>
                 <section className={styles.card}>
-                    <h1 className={styles.title}>
-                        Crear documento de Novedades
-                    </h1>
+                    <h1 className={styles.title}>Generador de Novedades</h1>
                     <p className={styles.subtitle}>
                         Exportá un .docx con el formato corporativo.
                     </p>

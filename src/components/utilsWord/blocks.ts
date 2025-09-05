@@ -11,12 +11,13 @@ import {
     TextRun,
     UnderlineType,
     WidthType,
+    TableLayoutType, // 👈 necesario para ancho 100% real
 } from 'docx';
 
 /** Paleta base (podés mover a colors.ts si preferís) */
 const COLORS = {
-    sectorBorder: '2F5597',
-    sectorFill: 'D9E2F3',
+    areaBorder: '2F5597',
+    areaFill: 'D9E2F3',
     thinLine: '000000',
     greyText: '666666',
     itemTitle: '153D63', // #153D63 (sin # para docx)
@@ -33,7 +34,7 @@ export function buildHeader(label: string): Header {
                         text: label,
                         color: COLORS.greyText,
                         bold: true,
-                        size: 18, // ~9pt (opcional)
+                        size: 20, // ~9pt (opcional)
                     }),
                 ],
             }),
@@ -51,7 +52,7 @@ export function buildFooter(label: string): Footer {
                     new TextRun({
                         text: label,
                         color: COLORS.greyText,
-                        size: 18, // ~9pt (opcional)
+                        size: 20, // ~9pt (opcional)
                     }),
                 ],
             }),
@@ -59,56 +60,58 @@ export function buildFooter(label: string): Footer {
     });
 }
 
-/** Franja "Sector" con fondo celeste y borde azul
+/** Franja "area" con fondo celeste y borde azul
  *  Estilo: bold, ~15px (≈ 11.25pt => size:22), color negro
  */
-export function makeSectorBox(sectorTitle: string): Table {
+export function makeareaBox(areaTitle: string): Table {
     return new Table({
         width: { size: 100, type: WidthType.PERCENTAGE },
-        columnWidths: [100],
+        layout: TableLayoutType.FIXED, // ancho 100% real
+        alignment: AlignmentType.LEFT, // pegado al margen
         rows: [
             new TableRow({
                 children: [
                     new TableCell({
-                        width: { size: 100, type: WidthType.PERCENTAGE },
                         borders: {
                             top: {
                                 style: BorderStyle.SINGLE,
-                                size: 16,
-                                color: COLORS.sectorBorder,
-                            },
+                                size: 8,
+                                color: COLORS.areaBorder,
+                            }, // fino
                             bottom: {
                                 style: BorderStyle.SINGLE,
-                                size: 16,
-                                color: COLORS.sectorBorder,
+                                size: 8,
+                                color: COLORS.areaBorder,
                             },
                             left: {
                                 style: BorderStyle.SINGLE,
-                                size: 16,
-                                color: COLORS.sectorBorder,
+                                size: 8,
+                                color: COLORS.areaBorder,
                             },
                             right: {
                                 style: BorderStyle.SINGLE,
-                                size: 16,
-                                color: COLORS.sectorBorder,
+                                size: 8,
+                                color: COLORS.areaBorder,
                             },
                         },
                         shading: {
                             type: ShadingType.CLEAR,
-                            fill: COLORS.sectorFill,
+                            fill: COLORS.areaFill,
                             color: 'auto',
                         },
+                        // margen interno mínimo para no “pegar” al borde
+                        margins: { top: 60, bottom: 60, left: 80, right: 80 }, // twips
                         children: [
                             new Paragraph({
                                 children: [
                                     new TextRun({
-                                        text: sectorTitle,
+                                        text: areaTitle,
                                         bold: true,
                                         color: '000000',
-                                        size: 22, // ✅ ~15px
+                                        size: 30, // ≈ 15px
                                     }),
                                 ],
-                                spacing: { before: 120, after: 120 },
+                                spacing: { before: 0, after: 0 }, // compacto
                             }),
                         ],
                     }),
@@ -142,7 +145,7 @@ export function areaHeading(text: string): Paragraph {
                 text: text.toUpperCase(),
                 bold: true,
                 color: '000000',
-                size: 16, // ✅ ~11px
+                size: 22, // ≈ 11px
             }),
         ],
         spacing: { before: 200, after: 100 },
@@ -159,7 +162,7 @@ export function noveltyTitle(text: string): Paragraph {
                 text: text.toUpperCase(),
                 bold: true,
                 color: COLORS.itemTitle, // #153D63
-                size: 16, // ✅ ~11px
+                size: 22, // ≈ 11px
                 underline: { type: UnderlineType.NONE },
             }),
         ],
@@ -176,7 +179,7 @@ export function noveltyDetail(text: string): Paragraph {
             new TextRun({
                 text,
                 color: COLORS.greyText,
-                size: 20, // ~10pt (si querés lo bajo a 18/16)
+                size: 22, // ≈ 10pt
             }),
         ],
         spacing: { after: 120 },
