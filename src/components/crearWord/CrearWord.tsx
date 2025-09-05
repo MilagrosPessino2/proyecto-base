@@ -4,6 +4,7 @@ import { createNovedadesDoc } from '../utilsWord/buildDoc';
 import type { areaSection } from '../utilsWord/types';
 import styles from './CrearWord.module.scss';
 import data, { areaTitle, novedades } from '../../data/mockNovedades';
+//test
 
 const CrearWord: React.FC = () => {
     const handleDownload = async () => {
