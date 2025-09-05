@@ -13,15 +13,8 @@ import {
     WidthType,
     TableLayoutType, // 👈 necesario para ancho 100% real
 } from 'docx';
-
+import { COLORS } from './colors';
 /** Paleta base (podés mover a colors.ts si preferís) */
-const COLORS = {
-    areaBorder: '2F5597',
-    areaFill: 'D9E2F3',
-    thinLine: '000000',
-    greyText: '666666',
-    itemTitle: '153D63', // #153D63 (sin # para docx)
-};
 
 /** Header reutilizable (texto a la derecha) */
 export function buildHeader(label: string): Header {
@@ -135,9 +128,7 @@ export function thinSeparator(): Paragraph {
     });
 }
 
-/** Encabezado del área (ej. "POWER APPS")
- *  Estilo: bold, ~11px (≈ 8.25pt => size:16), color negro
- */
+/** Encabezado del área (ej. "POWER APPS") */
 export function areaHeading(text: string): Paragraph {
     return new Paragraph({
         children: [
@@ -152,9 +143,7 @@ export function areaHeading(text: string): Paragraph {
     });
 }
 
-/** Título de novedad (ítem)
- *  Estilo: bold, ~11px (≈ 8.25pt => size:16), color #153D63, SIN subrayado
- */
+/** Título de novedad (ítem) */
 export function noveltyTitle(text: string): Paragraph {
     return new Paragraph({
         children: [
@@ -162,7 +151,7 @@ export function noveltyTitle(text: string): Paragraph {
                 text: text.toUpperCase(),
                 bold: true,
                 color: COLORS.itemTitle, // #153D63
-                size: 22, // ≈ 11px
+                size: 22,
                 underline: { type: UnderlineType.NONE },
             }),
         ],

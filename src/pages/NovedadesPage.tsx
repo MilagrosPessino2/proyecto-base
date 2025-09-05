@@ -34,7 +34,7 @@ const NovedadesPage: React.FC = () => {
             </main>
 
             <footer className={styles.footer}>
-                <span>© {new Date().getFullYear()} YPF — Interno</span>
+                <span>© {new Date().getFullYear()} YPF — Devs: Mili y Cisco</span>
             </footer>
         </div>
     );

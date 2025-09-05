@@ -11,33 +11,6 @@ import {
 } from './blocks';
 import type { areaSection, BuildDocInput } from './types';
 
-// ---- helper interno ----
-function buildSections(
-    sections: areaSection[],
-    maxItems: number
-): (Paragraph | Table)[] {
-    const out: (Paragraph | Table)[] = [];
-
-    for (const { gerencia, items } of sections) {
-        const limited = items.slice(0, maxItems);
-
-        // título del área
-        out.push(areaHeading(gerencia));
-
-        // items
-        limited.forEach(({ titulo: t, resumen }, idx) => {
-            out.push(noveltyTitle(t));
-            out.push(noveltyDetail(resumen));
-            if (idx < limited.length - 1) out.push(thinSeparator());
-        });
-
-        // espacio al final de cada bloque
-        out.push(new Paragraph({ spacing: { after: 200 } }));
-    }
-
-    return out;
-}
-
 // ---- builder principal ----
 export function createNovedadesDoc(input: BuildDocInput): Document {
     const {
@@ -67,6 +40,33 @@ export function createNovedadesDoc(input: BuildDocInput): Document {
             },
         ],
     });
+}
+
+// ---- helper interno ----
+function buildSections(
+    sections: areaSection[],
+    maxItems: number
+): (Paragraph | Table)[] {
+    const out: (Paragraph | Table)[] = [];
+
+    for (const { gerencia, items } of sections) {
+        const limited = items.slice(0, maxItems);
+
+        // título del área
+        out.push(areaHeading(gerencia));
+
+        // items
+        limited.forEach(({ titulo: t, resumen }, idx) => {
+            out.push(noveltyTitle(t));
+            out.push(noveltyDetail(resumen));
+            if (idx < limited.length - 1) out.push(thinSeparator());
+        });
+
+        // espacio al final de cada bloque
+        out.push(new Paragraph({ spacing: { after: 200 } }));
+    }
+
+    return out;
 }
 
 export default createNovedadesDoc;
