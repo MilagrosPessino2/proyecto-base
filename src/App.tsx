@@ -13,7 +13,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { Roles } from './utils/constants';
 import AdminPage from './components/AdminPage';
 import Home from './components/Home';
-import CrearWord from './components/crearWord/CrearWord';
+// import CrearWord from './components/crearWord/CrearWord';
+import NovedadesPage from './pages/NovedadesPage';
 // App.tsx
 // import CrearWord from './components/crearWord/CrearWord';
 
@@ -24,7 +25,7 @@ const App = () => {
     return (
         <Routes>
             {/* <Route path='/' element={<Home />} /> */}
-            <Route path='/' element={<CrearWord />} />
+            <Route path='/' element={<NovedadesPage />} />
             {/* <Route path='/crear-word' element={<CrearWord />} /> */}
             <Route
                 path='/admin'
