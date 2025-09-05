@@ -13,6 +13,7 @@ import {
     TextRun,
     UnderlineType,
     WidthType,
+    IImageOptions,
 } from 'docx';
 import { COLORS } from './colors';
 
@@ -164,18 +165,81 @@ export function noveltyDetail(text: string): Paragraph {
     });
 }
 
-/** Galería de imágenes (2 por fila por defecto)
- *  Recibe binarios (Uint8Array) y arma una tabla con bordes finos por imagen.
- */
+/* ===== Helpers para galería sin bordes ===== */
+const NO_CELL_BORDERS = {
+    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+    bottom: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+    right: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+} as const;
+
+const NO_TABLE_BORDERS = {
+    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+    bottom: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+    right: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+    insideHorizontal: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+    insideVertical: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+} as const;
+
+/** Cast seguro para `ImageRun` (evita errores de overload) */
+function toImageOptions(
+    data: Uint8Array,
+    width: number,
+    height: number
+): IImageOptions {
+    return {
+        data: data as unknown as Uint8Array, // 👈 OJO: sin genéricos
+        transformation: { width, height },
+    } as IImageOptions;
+}
+
+/** Galería de imágenes (centrada con 1 img, 2 por fila si hay 2+) */
 export function imageGallery(
     imageData: Uint8Array[],
     opts?: { perRow?: number; width?: number; height?: number }
 ): Table {
-    const perRow = opts?.perRow ?? 2;
-    const w = opts?.width ?? 250; // px aproximados en docx
+    const perRow = Math.max(1, opts?.perRow ?? 2);
+    const w = opts?.width ?? 250;
     const h = opts?.height ?? 160;
 
-    // Chunks de perRow
+    // 1 sola imagen → centrada, ocupando toda la fila, sin bordes
+    if (imageData.length === 1) {
+        const data = imageData[0];
+        return new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            layout: TableLayoutType.FIXED,
+            borders: NO_TABLE_BORDERS,
+            rows: [
+                new TableRow({
+                    children: [
+                        new TableCell({
+                            columnSpan: perRow,
+                            borders: NO_CELL_BORDERS,
+                            margins: {
+                                top: 120,
+                                bottom: 120,
+                                left: 120,
+                                right: 120,
+                            },
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new ImageRun(
+                                            toImageOptions(data, w, h)
+                                        ),
+                                    ],
+                                }),
+                            ],
+                        }),
+                    ],
+                }),
+            ],
+        });
+    }
+
+    // 2 o más imágenes → grilla perRow, sin bordes
     const rows: TableRow[] = [];
     for (let i = 0; i < imageData.length; i += perRow) {
         const slice = imageData.slice(i, i + perRow);
@@ -183,70 +247,23 @@ export function imageGallery(
         const cells = slice.map(
             (data) =>
                 new TableCell({
-                    borders: {
-                        top: {
-                            style: BorderStyle.SINGLE,
-                            size: 8,
-                            color: COLORS.thinLine,
-                        },
-                        bottom: {
-                            style: BorderStyle.SINGLE,
-                            size: 8,
-                            color: COLORS.thinLine,
-                        },
-                        left: {
-                            style: BorderStyle.SINGLE,
-                            size: 8,
-                            color: COLORS.thinLine,
-                        },
-                        right: {
-                            style: BorderStyle.SINGLE,
-                            size: 8,
-                            color: COLORS.thinLine,
-                        },
-                    },
+                    borders: NO_CELL_BORDERS,
                     margins: { top: 120, bottom: 120, left: 120, right: 120 },
                     children: [
                         new Paragraph({
                             alignment: AlignmentType.CENTER,
                             children: [
-                                new ImageRun({
-                                    data,
-                                    transformation: { width: w, height: h },
-                                    type: 'png', // or 'jpeg' depending on your image format
-                                }),
+                                new ImageRun(toImageOptions(data, w, h)),
                             ],
                         }),
                     ],
                 })
         );
 
-        // Si la última fila no completa el perRow, agregamos celdas vacías para mantener ancho
         while (cells.length < perRow) {
             cells.push(
                 new TableCell({
-                    borders: {
-                        top: {
-                            style: BorderStyle.SINGLE,
-                            size: 8,
-                            color: COLORS.thinLine,
-                        },
-                        bottom: {
-                            style: BorderStyle.SINGLE,
-                            size: 8,
-                            color: COLORS.thinLine,
-                        },
-                        left: {
-                            style: BorderStyle.SINGLE,
-                            size: 8,
-                            color: COLORS.thinLine,
-                        },
-                        right: {
-                            style: BorderStyle.SINGLE,
-                            size: 8,
-                            color: COLORS.thinLine,
-                        },
-                    },
+                    borders: NO_CELL_BORDERS,
                     children: [new Paragraph({})],
                 })
             );
@@ -258,6 +275,7 @@ export function imageGallery(
     return new Table({
         width: { size: 100, type: WidthType.PERCENTAGE },
         layout: TableLayoutType.FIXED,
+        borders: NO_TABLE_BORDERS,
         rows,
     });
 }
