@@ -3,19 +3,18 @@ import { COLOR_TOKENS } from '../colors';
 
 /** Header reutilizable (texto a la derecha) */
 export function buildHeader(label: string): Header {
-  return new Header({
-    children: [
-      new Paragraph({
-        alignment: AlignmentType.RIGHT,
+    return new Header({
         children: [
-          new TextRun({
-            text: label,
-            color: COLOR_TOKENS.textoDetalleNovedad,
-            bold: true,
-            size: 20,
-          }),
+            new Paragraph({
+                alignment: AlignmentType.RIGHT,
+                children: [
+                    new TextRun({
+                        text: label,
+                        color: COLOR_TOKENS.textoDetalleNovedad,
+                        size: 20,
+                    }),
+                ],
+            }),
         ],
-      }),
-    ],
-  });
+    });
 }
