@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './NovedadesPage.module.scss';
-import CrearWord from '../components/crearWord/CrearWord'; // ajustá el path según tu proyecto
+import CrearWord from '../components/crearWord/CrearWord'; 
 
 const NovedadesPage: React.FC = () => {
     return (
