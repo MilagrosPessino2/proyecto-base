@@ -1,17 +1,20 @@
-export interface NoveltyItem {
-    titulo: string;
-    resumen: string;
-    imagenes?: string[];
+/** Item dentro de un área de novedad */
+export interface ItemNovedad {
+  tituloNovedad: string;
+  detalleNovedad: string;
+  imagenesNovedad?: string[];
+}
+export interface SeccionArea {
+  areaNovedad: string;
+  items: ItemNovedad[];
 }
 
-export interface areaSection {
-    gerencia: string;
-    items: NoveltyItem[];
-}
-
+/** Entrada para construir el documento de novedades */
 export interface BuildDocInput {
-    areaTitle: string;
-    novedad: areaSection[];
-    maxItemsPerSection?: number;
-    confidentialityLabel?: string;
+  sectorGeneral: string;
+  novedad: SeccionArea[];
+  maxItemsPerSection?: number;
+  confidentialityLabel?: string;
 }
+
+
