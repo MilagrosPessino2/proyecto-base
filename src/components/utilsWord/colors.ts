@@ -1,4 +1,3 @@
-// colors.ts
 export const COLOR_TOKENS = {
     bordeArea: '2F5597', // antes areaBorder
     fondoArea: 'D9E2F3', // antes areaFill

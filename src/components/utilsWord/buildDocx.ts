@@ -1,7 +1,7 @@
-// src/components/utilsWord/buildDocx.ts
 import type { SeccionAreaRich, BuildDocRichInput } from './types';
 import { htmlToDocxBlocks } from './richHtmlToDocx';
 import { buildHeader, buildFooter, buildSectorBox } from './blocks';
+import { COLOR_TOKENS } from './colors';
 import {
     Document,
     Paragraph,
@@ -19,56 +19,55 @@ export async function buildDocDesdeRich(
     sectorGeneral: string,
     confidentialityLabel: string
 ): Promise<Document> {
-    const children: (Paragraph | Table)[] = [];
+    // Vamos a mezclar una Table (sectorBox) y múltiples Paragraphs
+    const sectionChildren: Array<Paragraph | Table> = [];
 
     // Caja con el sector general (Table)
     const sectorBox = buildSectorBox(sectorGeneral) as unknown as Table;
 
-    // --- Agregamos la caja y un espaciado debajo ---
-    children.push(sectorBox);
-    children.push(
-        new Paragraph({
-            spacing: { after: 100 }, // ≈20pt de espacio después del box
-        })
-    );
+    // Box primero...
+    sectionChildren.push(sectorBox);
+    // ...y un pequeño espacio debajo del box (≈6pt)
+    sectionChildren.push(new Paragraph({ spacing: { after: 120 } }));
 
+    // Recorremos las áreas
     for (const sec of secciones) {
-        // Título de área con espacio después (Calibri 12, negro, negrita)
-        children.push(
+        // Título de área — Calibri 12, negro, negrita, con algo de aire debajo
+        sectionChildren.push(
             new Paragraph({
                 alignment: AlignmentType.LEFT,
-                spacing: { after: 200 }, // ≈10pt después del área
+                spacing: { after: 200 }, // ≈10pt
                 children: [
                     new TextRun({
                         text: sec.areaNovedad,
                         font: FONT,
                         size: SIZE_AREA,
-                        color: '000000',
+                        color: COLOR_TOKENS.textoDetalleNovedad,
                         bold: true,
                     }),
                 ],
             })
         );
 
-        // Items de la sección
+        // Items (cada uno con su richHtml)
         for (const item of sec.items) {
             const bloques = await htmlToDocxBlocks(item.richHtml, {
                 maxImageWidth: 420,
                 maxImageHeight: 280,
             });
-            children.push(...bloques);
+            sectionChildren.push(...bloques);
 
-            // Línea separadora debajo de cada novedad + aire
-            children.push(
+            // Separador fino debajo de cada novedad + aire arriba/abajo
+            sectionChildren.push(
                 new Paragraph({
                     border: {
                         bottom: {
                             style: BorderStyle.SINGLE,
                             size: 6,
-                            color: '999999',
+                            color: COLOR_TOKENS.separadorLinea,
                         },
                     },
-                    spacing: { before: 200, after: 200 },
+                    spacing: { before: 200, after: 200 }, // ≈10pt arriba y abajo
                 })
             );
         }
@@ -79,12 +78,13 @@ export async function buildDocDesdeRich(
             {
                 headers: { default: buildHeader(confidentialityLabel) },
                 footers: { default: buildFooter(confidentialityLabel) },
-                children,
+                children: sectionChildren,
             },
         ],
     });
 }
 
+/** Export para el hook */
 export async function createNovedadesDoc(
     input: BuildDocRichInput
 ): Promise<Document> {
