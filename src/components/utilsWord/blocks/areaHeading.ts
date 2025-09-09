@@ -1,4 +1,5 @@
 import { Paragraph, TextRun } from 'docx';
+import { COLOR_TOKENS, TAMANIO } from '../../config/constants';
 
 /** Encabezado del área (ej. "POWER APPS") */
 export function areaHeading(text: string): Paragraph {
@@ -7,8 +8,8 @@ export function areaHeading(text: string): Paragraph {
             new TextRun({
                 text: text.toUpperCase(),
                 bold: true,
-                color: '000000',
-                size: 22,
+                color: COLOR_TOKENS.textoNegro,
+                size: TAMANIO.tamanioTittle,
             }),
         ],
         spacing: { before: 200, after: 100 },

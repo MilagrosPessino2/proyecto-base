@@ -1,5 +1,5 @@
 import { AlignmentType, Header, Paragraph, TextRun } from 'docx';
-import { COLOR_TOKENS } from '../../config/constants';
+import { COLOR_TOKENS, TAMANIO } from '../../config/constants';
 
 /** Header reutilizable (texto a la derecha) */
 export function buildHeader(label: string): Header {
@@ -11,7 +11,7 @@ export function buildHeader(label: string): Header {
                     new TextRun({
                         text: label,
                         color: COLOR_TOKENS.textoDetalleNovedad,
-                        size: 20,
+                        size: TAMANIO.tamanioTextoFooterHeader,
                     }),
                 ],
             }),

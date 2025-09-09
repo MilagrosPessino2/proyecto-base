@@ -1,5 +1,5 @@
 import { Paragraph, TextRun } from 'docx';
-import { COLOR_TOKENS } from '../../config/constants';
+import { COLOR_TOKENS, TAMANIO } from '../../config/constants';
 
 /** Detalle/Descripción del ítem */
 export function noveltyDetail(text: string): Paragraph {
@@ -8,7 +8,7 @@ export function noveltyDetail(text: string): Paragraph {
             new TextRun({
                 text,
                 color: COLOR_TOKENS.textoDetalleNovedad,
-                size: 22,
+                size: TAMANIO.tamanioTextoDetalleNovedad,
             }),
         ],
         spacing: { after: 120 },

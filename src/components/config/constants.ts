@@ -7,9 +7,13 @@ export const COLOR_TOKENS = {
     tituloItemNovedad: '153D63', // antes itemTitle / titleBlue
     textoDetalleNovedad: '141414', // antes greyText
     separadorLinea: '000000', // antes thinLine
+    textoNegro: '000000', // antes blackText
 }as const;
 
 export const TAMANIO = {
     tamanioTittle: 22,
-    tamanioSubtittle: 20,
+    tamanioTextoDetalleNovedad: 22,
+    tamanioTextoFooterHeader: 20,
+    tamanioBorderArea: 8,
+    tamanioTextoArea: 30,
 }

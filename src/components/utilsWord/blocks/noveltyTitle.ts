@@ -1,5 +1,5 @@
 import { Paragraph, TextRun, UnderlineType } from 'docx';
-import { COLOR_TOKENS } from '../../config/constants';
+import { COLOR_TOKENS, TAMANIO } from '../../config/constants';
 
 /** Título de novedad (ítem) */
 export function noveltyTitle(text: string): Paragraph {
@@ -9,7 +9,7 @@ export function noveltyTitle(text: string): Paragraph {
                 text: text.toUpperCase(),
                 bold: true,
                 color: COLOR_TOKENS.tituloItemNovedad,
-                size: 22,
+                size: TAMANIO.tamanioTittle,
                 underline: { type: UnderlineType.NONE },
             }),
         ],

@@ -10,7 +10,7 @@ import {
     TextRun,
     WidthType,
 } from 'docx';
-import { COLOR_TOKENS } from '../../config/constants';
+import { COLOR_TOKENS, TAMANIO } from '../../config/constants';
 
 /** Franja "area" con fondo y borde del sector */
 export function makeareaBox(sectorGeneral: string): Table {
@@ -25,22 +25,22 @@ export function makeareaBox(sectorGeneral: string): Table {
                         borders: {
                             top: {
                                 style: BorderStyle.SINGLE,
-                                size: 8,
+                                size: TAMANIO.tamanioBorderArea,
                                 color: COLOR_TOKENS.bordeArea,
                             },
                             bottom: {
                                 style: BorderStyle.SINGLE,
-                                size: 8,
+                                size: TAMANIO.tamanioBorderArea,
                                 color: COLOR_TOKENS.bordeArea,
                             },
                             left: {
                                 style: BorderStyle.SINGLE,
-                                size: 8,
+                                size: TAMANIO.tamanioBorderArea,
                                 color: COLOR_TOKENS.bordeArea,
                             },
                             right: {
                                 style: BorderStyle.SINGLE,
-                                size: 8,
+                                size: TAMANIO.tamanioBorderArea,
                                 color: COLOR_TOKENS.bordeArea,
                             },
                         },
@@ -56,8 +56,8 @@ export function makeareaBox(sectorGeneral: string): Table {
                                     new TextRun({
                                         text: sectorGeneral,
                                         bold: true,
-                                        color: '000000',
-                                        size: 30,
+                                        color: COLOR_TOKENS.textoNegro,
+                                        size: TAMANIO.tamanioTextoArea,
                                     }),
                                 ],
                                 spacing: { before: 0, after: 0 },
