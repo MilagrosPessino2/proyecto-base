@@ -12,13 +12,21 @@ import {
     BorderStyle,
 } from 'docx';
 import { COLOR_TOKENS } from './colors';
+import {
+    DOCX_FONT,
+    DOCX_FONT_SIZES,
+    DOCX_BORDERS,
+    DOCX_CONFIDENTIAL_LABEL,
+} from '../config/constants';
 
-const FONT = 'Calibri';
-const SIZE_CONF = 20; // 10pt
-const SIZE_AREA = 24; // 12pt
+const FONT = DOCX_FONT;
+const SIZE_CONF = DOCX_FONT_SIZES.confidential; // 10pt
+const SIZE_AREA = DOCX_FONT_SIZES.area; // 12pt
 
-/** Header con "YPF-Confidencial" a la derecha, Calibri 10 sin negrita */
-export function buildHeader(confidentialLabel = 'YPF-Confidencial') {
+/** Header con confidencial a la derecha (Calibri 10 sin negrita) */
+export function buildHeader(
+    confidentialLabel: string = DOCX_CONFIDENTIAL_LABEL
+) {
     return new Header({
         children: [
             new Paragraph({
@@ -36,8 +44,10 @@ export function buildHeader(confidentialLabel = 'YPF-Confidencial') {
     });
 }
 
-/** Footer con "YPF-Confidencial" a la derecha, Calibri 10 sin negrita */
-export function buildFooter(confidentialLabel = 'YPF-Confidencial') {
+/** Footer con confidencial a la derecha (Calibri 10 sin negrita) */
+export function buildFooter(
+    confidentialLabel: string = DOCX_CONFIDENTIAL_LABEL
+) {
     return new Footer({
         children: [
             new Paragraph({
@@ -55,7 +65,10 @@ export function buildFooter(confidentialLabel = 'YPF-Confidencial') {
     });
 }
 
-/** Caja para el Sector General (fondo suave + borde, Calibri 12 negrita) */
+/**
+ * Caja para el Sector General (fondo suave + borde corporativo).
+ * Contenido: Calibri 12 negrita, color de texto corporativo.
+ */
 export function buildSectorBox(texto: string) {
     return new Table({
         width: { size: 100, type: WidthType.PERCENTAGE },
@@ -71,22 +84,22 @@ export function buildSectorBox(texto: string) {
                         borders: {
                             top: {
                                 style: BorderStyle.SINGLE,
-                                size: 16,
+                                size: DOCX_BORDERS.sectorBorderSize,
                                 color: COLOR_TOKENS.bordeArea,
                             },
                             bottom: {
                                 style: BorderStyle.SINGLE,
-                                size: 16,
+                                size: DOCX_BORDERS.sectorBorderSize,
                                 color: COLOR_TOKENS.bordeArea,
                             },
                             left: {
                                 style: BorderStyle.SINGLE,
-                                size: 16,
+                                size: DOCX_BORDERS.sectorBorderSize,
                                 color: COLOR_TOKENS.bordeArea,
                             },
                             right: {
                                 style: BorderStyle.SINGLE,
-                                size: 16,
+                                size: DOCX_BORDERS.sectorBorderSize,
                                 color: COLOR_TOKENS.bordeArea,
                             },
                         },
@@ -97,7 +110,7 @@ export function buildSectorBox(texto: string) {
                                         text: texto,
                                         bold: true,
                                         font: FONT,
-                                        size: SIZE_AREA,
+                                        size: 30,
                                         color: COLOR_TOKENS.textoDetalleNovedad,
                                     }),
                                 ],

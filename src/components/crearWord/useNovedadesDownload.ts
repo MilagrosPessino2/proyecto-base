@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { createNovedadesDoc } from '../utilsWord/buildDocx';
 import { downloadDoc } from '../utilsWord/downloadDocx';
-import dataDefault from '../../data/novedadesRich'; 
+import dataDefault from '../../data/novedadesRich';
 import type { BuildDocRichInput } from '../utilsWord/types';
 import { DOCX_FILENAME } from '../config/constants';
 
@@ -27,7 +27,7 @@ export function useNovedadesDownload({
             };
 
             const doc = await createNovedadesDoc(input);
-            await downloadDoc(doc, filename);
+            await downloadDoc(doc, DOCX_FILENAME);
         } finally {
             setLoading(false);
         }

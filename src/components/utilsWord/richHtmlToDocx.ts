@@ -6,11 +6,17 @@
 
 import { Paragraph, TextRun, ImageRun, AlignmentType } from 'docx';
 import { COLOR_TOKENS } from './colors';
+import {
+    DOCX_FONT,
+    DOCX_FONT_SIZES,
+    DOCX_SPACING,
+    DOCX_IMAGES,
+} from '../config/constants';
 
-// ---- Estilos base del documento ----
-const FONT = 'Calibri';
-const SIZE_BODY = 20; // 10pt para texto general
-const SIZE_H1 = 22; // 11pt para <h1> dentro del rich HTML
+// ---- Estilos base del documento (centralizados en constants) ----
+const FONT = DOCX_FONT;
+const SIZE_BODY = DOCX_FONT_SIZES.body; // 10pt
+const SIZE_H1 = DOCX_FONT_SIZES.h1; // 11pt
 
 // -------------------------------------------------------------
 // Utilidades para trabajar con imágenes (dataURL / URL remota)
@@ -208,14 +214,14 @@ async function paragraphFromImgSrc(
 
         return new Paragraph({
             alignment: AlignmentType.CENTER,
-            spacing: { before: 20, after: 0 }, // el espaciado real post-imagen lo agrega el “separador” externo
+            spacing: { before: DOCX_SPACING.imageBefore, after: 0 },
             children: [rasterImageRun(bytes, w, h)],
         });
     } catch {
         // Fallback cuando no se pudo cargar la imagen
         return new Paragraph({
             alignment: AlignmentType.CENTER,
-            spacing: { before: 20, after: 0 },
+            spacing: { before: DOCX_SPACING.imageBefore, after: 0 },
             children: [
                 new TextRun({
                     text: `[Imagen no disponible: ${src}]`,
@@ -244,7 +250,10 @@ export async function htmlToDocxBlocks(
     html: string,
     opts?: { maxImageWidth?: number; maxImageHeight?: number }
 ): Promise<Paragraph[]> {
-    const { maxImageWidth, maxImageHeight } = opts || {};
+    const {
+        maxImageWidth = DOCX_IMAGES.maxWidth,
+        maxImageHeight = DOCX_IMAGES.maxHeight,
+    } = opts || {};
     const parser = new DOMParser();
     const parsed = parser.parseFromString(html, 'text/html');
     const body = parsed.body;
@@ -321,7 +330,11 @@ export async function htmlToDocxBlocks(
                 blocks.push(imgPara);
 
                 // Separador extra (≈2pt) para que imágenes sucesivas no queden pegadas
-                blocks.push(new Paragraph({ spacing: { after: 40 } }));
+                blocks.push(
+                    new Paragraph({
+                        spacing: { after: DOCX_SPACING.imageGapAfter },
+                    })
+                );
             } else {
                 // Caso: texto (posiblemente con inline <b>/<i>/<u>)
                 let runs: InlineRun[] = [];
@@ -387,7 +400,11 @@ export async function htmlToDocxBlocks(
             );
             blocks.push(imgPara);
             // Separador extra (≈2pt) para imagen suelta
-            blocks.push(new Paragraph({ spacing: { after: 40 } }));
+            blocks.push(
+                new Paragraph({
+                    spacing: { after: DOCX_SPACING.imageGapAfter },
+                })
+            );
             continue;
         }
 
