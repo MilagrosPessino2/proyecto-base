@@ -1,140 +1,126 @@
+// buildDoc.ts
 import { Document, Paragraph } from 'docx';
 import {
-    buildFooter,
-    buildHeader,
-    makeareaBox,
-    areaHeading,
-    noveltyDetail,
-    noveltyTitle,
-    thinSeparator,
+  buildFooter,
+  buildHeader,
+  makeareaBox,
+  areaHeading,
+  noveltyDetail,
+  noveltyTitle,
+  thinSeparator,
 } from './blocks';
-import { imageGallery } from './blocks/imageGallery';
+import { imageGallery, type ImgEscalada } from './blocks/imageGallery';
 import type { SeccionArea, BuildDocInput } from './types';
 
 import {
-    loadImageOriginal,
-    insertarOrdenado,
-    comparaImagenesPorAltoAncho,
+  loadImageOriginal,
+  insertarOrdenado,
+  comparaImagenesPorAltoAncho,
+  type ImagenOrdenada,
 } from './images';
 
-type ImgEscalada = { data: Uint8Array; width: number; height: number };
-
 async function buildSectionsAsync(
-    sections: SeccionArea[],
-    pageContentWidthPx: number,
-    minImageWidthPx = 0
+  sections: SeccionArea[],
+  pageContentWidthPx: number,
+  minImageWidthPx = 0
 ): Promise<Paragraph[]> {
-    const out: Paragraph[] = [];
+  const out: Paragraph[] = [];
 
-    for (const { areaNovedad, items } of sections) {
-        out.push(areaHeading(areaNovedad));
+  for (const { areaNovedad, items } of sections) {
+    out.push(areaHeading(areaNovedad));
 
-        for (const { tituloNovedad, detalleNovedad, imagenesNovedad } of items) {
-            out.push(noveltyTitle(tituloNovedad));
-            out.push(noveltyDetail(detalleNovedad));
+    for (const { tituloNovedad, detalleNovedad, imagenesNovedad } of items) {
+      out.push(noveltyTitle(tituloNovedad));
+      out.push(noveltyDetail(detalleNovedad));
 
-            if (imagenesNovedad && imagenesNovedad.length > 0) {
-                //ordenado usando comparador (alto ASC → ancho ASC)
-                const wrappersOrdenados: {
-                    data: Uint8Array;
-                    dimension: { alto: number; ancho: number };
-                    original: { alto: number; ancho: number };
-                }[] = [];
+      if (imagenesNovedad && imagenesNovedad.length > 0) {
+        const wrappersOrdenados: ImagenOrdenada[] = [];
 
-                for (const url of imagenesNovedad) {
-                    try {
-                        const raw = await loadImageOriginal(url);
-                        if (!raw) continue;
+        for (const url of imagenesNovedad) {
+          try {
+            const raw = await loadImageOriginal(url);
+            if (!raw) continue;
 
-                        const relacion = raw.ancho > 0 ? raw.alto / raw.ancho : 0;
-                        if (!(relacion > 0 && isFinite(relacion))) continue;
+            const relacion = raw.ancho > 0 ? raw.alto / raw.ancho : 0;
+            if (!(relacion > 0 && isFinite(relacion))) continue;
 
-                        // ancho natural limitado al ancho de contenido
-                        const naturalMax = Math.min(
-                            Math.max(1, raw.ancho),
-                            Math.max(1, pageContentWidthPx)
-                        );
+            const naturalMax = Math.min(
+              Math.max(1, raw.ancho),
+              Math.max(1, pageContentWidthPx)
+            );
 
-                        let width: number;
-                        if (minImageWidthPx > 0) {
-                            width = Math.min(naturalMax, Math.max(1, minImageWidthPx));
-                        } else {
-                            width = naturalMax;
-                        }
+            const width =
+              minImageWidthPx > 0
+                ? Math.min(naturalMax, Math.max(1, minImageWidthPx))
+                : naturalMax;
 
-                        const height = Math.max(1, Math.round(width * relacion));
+            const height = Math.max(1, Math.round(width * relacion));
 
-                        //estructura ImagenOrdenada-compatible para ordenar
-                        const wrapper = {
-                            data: raw.data,
-                            dimension: { alto: height, ancho: width },
-                            original: { alto: raw.alto, ancho: raw.ancho },
-                        };
+            const wrapper: ImagenOrdenada = {
+              data: raw.data,                           // ArrayBuffer
+              dimension: { alto: height, ancho: width },
+              original: { alto: raw.alto, ancho: raw.ancho },
+              extension: raw.extension,                           // 'image/png'
+            };
 
-                        insertarOrdenado(
-                            wrappersOrdenados,
-                            wrapper,
-                            comparaImagenesPorAltoAncho 
-                        );
-                    } catch {
-                        // ignorar imagen fallida
-                    }
-                }
-
-                if (wrappersOrdenados.length > 0) {
-                    const escaladas: ImgEscalada[] = wrappersOrdenados.map(w => ({
-                        data: w.data,
-                        width: w.dimension.ancho,
-                        height: w.dimension.alto,
-                    }));
-                    out.push(...imageGallery(escaladas));
-                }
-            }
-
-            out.push(thinSeparator());
+            insertarOrdenado(wrappersOrdenados, wrapper, comparaImagenesPorAltoAncho);
+          } catch {
+            /* ignorar imagen fallida */
+          }
         }
 
-        out.push(new Paragraph({ spacing: { after: 50 } }));
+        if (wrappersOrdenados.length > 0) {
+          const escaladas: ImgEscalada[] = wrappersOrdenados.map(w => ({
+            data: w.data,
+            width: w.dimension.ancho,
+            height: w.dimension.alto,
+            extension: w.extension, // 'image/png'
+          }));
+          out.push(...imageGallery(escaladas));
+        }
+      }
+
+      out.push(thinSeparator());
     }
 
-    return out;
+    out.push(new Paragraph({ spacing: { after: 50 } }));
+  }
+
+  return out;
 }
 
 /* Builder principal (async) */
-export async function createNovedadesDoc(
-    input: BuildDocInput
-): Promise<Document> {
-    const {
-        sectorGeneral,
-        novedad,
-        confidentialityLabel = 'YPF-Confidencial',
-    } = input;
+export async function createNovedadesDoc(input: BuildDocInput): Promise<Document> {
+  const {
+    sectorGeneral,
+    novedad,
+  } = input;
 
-    const PAGE_CONTENT_WIDTH = 500;
-    const MIN_IMAGE_WIDTH = 0; 
+  const PAGE_CONTENT_WIDTH = 500; // ajustá si cambian márgenes
+  const MIN_IMAGE_WIDTH = 0;
 
-    const sectionChildren = [
-        makeareaBox(sectorGeneral),
-        ...(await buildSectionsAsync(novedad, PAGE_CONTENT_WIDTH, MIN_IMAGE_WIDTH)),
-    ];
+  const sectionChildren = [
+    makeareaBox(sectorGeneral),
+    ...(await buildSectionsAsync(novedad, PAGE_CONTENT_WIDTH, MIN_IMAGE_WIDTH)),
+  ];
 
-    return new Document({
-        styles: {
-            default: {
-                document: {
-                    run: { font: 'Calibri' },
-                    paragraph: { spacing: { before: 80, after: 80 } },
-                },
-            },
+  return new Document({
+    styles: {
+      default: {
+        document: {
+          run: { font: 'Calibri' },
+          paragraph: { spacing: { before: 80, after: 80 } },
         },
-        sections: [
-            {
-                headers: { default: buildHeader(confidentialityLabel) },
-                footers: { default: buildFooter(confidentialityLabel) },
-                children: sectionChildren
-            },
-        ],
-    });
+      },
+    },
+    sections: [
+      {
+        headers: { default: buildHeader('YPF-Confidencial') },
+        footers: { default: buildFooter('YPF-Confidencial') },
+        children: sectionChildren,
+      },
+    ],
+  });
 }
 
 export default createNovedadesDoc;
