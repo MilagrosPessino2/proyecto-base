@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { createNovedadesDoc } from '../utilsWord/buildDocx';
 import { downloadDoc } from '../utilsWord/downloadDocx';
-import dataDefault from '../../data/textoEnriquecido'; // <-- mock RICH (cambiá el path a tu archivo real)
+import dataDefault from '../../data/novedadesRich'; 
 import type { BuildDocRichInput } from '../utilsWord/types';
 import { DOCX_FILENAME } from '../config/constants';
 

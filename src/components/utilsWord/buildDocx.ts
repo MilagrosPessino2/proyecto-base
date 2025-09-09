@@ -1,87 +1,93 @@
-import { Document, Paragraph, TextRun, HeadingLevel } from 'docx';
+// src/components/utilsWord/buildDocx.ts
 import type { SeccionAreaRich, BuildDocRichInput } from './types';
 import { htmlToDocxBlocks } from './richHtmlToDocx';
+import { buildHeader, buildFooter, buildSectorBox } from './blocks';
+import {
+    Document,
+    Paragraph,
+    TextRun,
+    AlignmentType,
+    BorderStyle,
+    Table,
+} from 'docx';
 
 const FONT = 'Calibri';
-const SIZE_BODY = 20; // 10pt
-const SIZE_H1 = 22; // 11pt
 const SIZE_AREA = 24; // 12pt
-const SIZE_ITEM = 22; // 11pt para H3
 
 export async function buildDocDesdeRich(
     secciones: SeccionAreaRich[],
-    tituloDocumento: string
+    sectorGeneral: string,
+    confidentialityLabel: string
 ): Promise<Document> {
-    const children: Paragraph[] = [];
+    const children: (Paragraph | Table)[] = [];
 
-    // Título global (H1: Calibri 11, negrita)
+    // Caja con el sector general (Table)
+    const sectorBox = buildSectorBox(sectorGeneral) as unknown as Table;
+
+    // --- Agregamos la caja y un espaciado debajo ---
+    children.push(sectorBox);
     children.push(
         new Paragraph({
-            children: [
-                new TextRun({
-                    text: tituloDocumento,
-                    bold: true,
-                    font: FONT,
-                    size: SIZE_H1,
-                    color: '000000',
-                }),
-            ],
-            heading: HeadingLevel.HEADING_1,
+            spacing: { after: 100 }, // ≈20pt de espacio después del box
         })
     );
 
     for (const sec of secciones) {
-        // Título de área (Calibri 12, negro, negrita)
+        // Título de área con espacio después (Calibri 12, negro, negrita)
         children.push(
             new Paragraph({
+                alignment: AlignmentType.LEFT,
+                spacing: { after: 200 }, // ≈10pt después del área
                 children: [
                     new TextRun({
                         text: sec.areaNovedad,
-                        bold: true,
                         font: FONT,
                         size: SIZE_AREA,
                         color: '000000',
+                        bold: true,
                     }),
                 ],
-                heading: HeadingLevel.HEADING_2,
             })
         );
 
+        // Items de la sección
         for (const item of sec.items) {
-            // Título de novedad (Calibri 11, negrita)
-            children.push(
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: item.tituloNovedad,
-                            bold: true,
-                            font: FONT,
-                            size: SIZE_ITEM,
-                            color: '000000',
-                        }),
-                    ],
-                    heading: HeadingLevel.HEADING_3,
-                })
-            );
-
-            // Contenido HTML → bloques docx (usa body: Calibri 10)
-            const bloques = await htmlToDocxBlocks(item.detalleHtml, {
+            const bloques = await htmlToDocxBlocks(item.richHtml, {
                 maxImageWidth: 420,
                 maxImageHeight: 280,
             });
+            children.push(...bloques);
 
-            bloques.forEach((b) => children.push(b));
+            // Línea separadora debajo de cada novedad + aire
+            children.push(
+                new Paragraph({
+                    border: {
+                        bottom: {
+                            style: BorderStyle.SINGLE,
+                            size: 6,
+                            color: '999999',
+                        },
+                    },
+                    spacing: { before: 200, after: 200 },
+                })
+            );
         }
     }
 
-    return new Document({ sections: [{ children }] });
+    return new Document({
+        sections: [
+            {
+                headers: { default: buildHeader(confidentialityLabel) },
+                footers: { default: buildFooter(confidentialityLabel) },
+                children,
+            },
+        ],
+    });
 }
 
-/** Mantiene compatibilidad para tu hook */
 export async function createNovedadesDoc(
     input: BuildDocRichInput
 ): Promise<Document> {
     const { sectorGeneral, novedad, confidentialityLabel } = input;
-    const titulo = `${confidentialityLabel} — ${sectorGeneral}`;
-    return buildDocDesdeRich(novedad, titulo);
+    return buildDocDesdeRich(novedad, sectorGeneral, confidentialityLabel);
 }

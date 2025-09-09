@@ -10,14 +10,14 @@ export interface SeccionArea {
 }
 
 // ==== Tipos RICH (HTML) ====
+// NUEVO: el título viene dentro del HTML (ej. <h1>...).
 export interface ItemRich {
-    tituloNovedad: string;
-    /** HTML enriquecido completo */
-    detalleHtml: string;
+    /** HTML enriquecido completo: puede incluir <h1>, p/strong/em/u, ul/ol/li, img (dataURL o URL), etc. */
+    richHtml: string;
 }
 export interface SeccionAreaRich {
-    areaNovedad: string;
-    items: ItemRich[];
+    areaNovedad: string; // encabezado de sección (fuera del HTML del ítem)
+    items: ItemRich[]; // cada item contiene TODO su contenido dentro de richHtml
 }
 
 /** Input "clásico" (si existía) */
