@@ -1,4 +1,10 @@
-import { Paragraph, TextRun, ImageRun } from 'docx';
+import { Paragraph, TextRun, ImageRun, AlignmentType } from 'docx';
+
+/** === Estilos base === */
+const FONT = 'Calibri';
+const SIZE_BODY = 20; // 10pt
+const SIZE_H1 = 22; // 11pt (por si lo necesitás acá)
+const SIZE_AREA = 24; // 12pt
 
 /** Convierte dataURL base64 → Uint8Array */
 function dataUrlToUint8(dataUrl: string): Uint8Array {
@@ -40,7 +46,7 @@ function rasterImageRun(
     const opts = {
         data: bytes,
         transformation: { width, height },
-    } as unknown as ConstructorParameters<typeof ImageRun>[0]; // fuerza el overload correcto
+    } as unknown as ConstructorParameters<typeof ImageRun>[0];
     return new ImageRun(opts);
 }
 
@@ -75,7 +81,7 @@ function inlineHtmlToRuns(node: ChildNode): InlineRun[] {
     return [];
 }
 
-/** Convierte InlineRun[] a TextRun[] */
+/** Convierte InlineRun[] a TextRun[] con Calibri 10 por defecto */
 function toTextRuns(runs: InlineRun[]): TextRun[] {
     return runs.map(
         (r) =>
@@ -84,14 +90,18 @@ function toTextRuns(runs: InlineRun[]): TextRun[] {
                 bold: !!r.bold,
                 italics: !!r.italic,
                 underline: r.underline ? {} : undefined,
+                font: FONT,
+                size: SIZE_BODY,
+                color: '000000',
             })
     );
 }
 
 /**
- * Convierte HTML enriquecido a Paragraph[].
- * - Soporta p, strong/b, em/i, u, ul/ol/li e img (dataURL o por fetch).
- * - Para listas usa “• ” y “1. ” como prefijo (simple).
+ * Convierte HTML enriquecido a Paragraph[] con estilos de cuerpo
+ * - Soporta p, strong/b, em/i, u, ul/ol/li e img (dataURL o por fetch)
+ * - Listas simples con “• ” y “1. ”
+ * - Imágenes centradas
  */
 export async function htmlToDocxBlocks(
     html: string,
@@ -109,7 +119,20 @@ export async function htmlToDocxBlocks(
     for (const node of Array.from(body.childNodes)) {
         if (node.nodeType === Node.TEXT_NODE) {
             const txt = normalizeText(node.textContent ?? '');
-            if (txt) blocks.push(new Paragraph(txt));
+            if (txt) {
+                blocks.push(
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: txt,
+                                font: FONT,
+                                size: SIZE_BODY,
+                                color: '000000',
+                            }),
+                        ],
+                    })
+                );
+            }
             continue;
         }
         if (node.nodeType !== Node.ELEMENT_NODE) continue;
@@ -137,10 +160,24 @@ export async function htmlToDocxBlocks(
                         maxImageWidth,
                         maxImageHeight
                     );
-                    blocks.push(new Paragraph({ children: [image] }));
+                    blocks.push(
+                        new Paragraph({
+                            alignment: AlignmentType.CENTER,
+                            children: [image],
+                        })
+                    );
                 } catch {
                     blocks.push(
-                        new Paragraph(`[Imagen no disponible: ${src}]`)
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: `[Imagen no disponible: ${src}]`,
+                                    font: FONT,
+                                    size: SIZE_BODY,
+                                }),
+                            ],
+                            alignment: AlignmentType.CENTER,
+                        })
                     );
                 }
             } else {
@@ -148,8 +185,9 @@ export async function htmlToDocxBlocks(
                 el.childNodes.forEach(
                     (cn) => (runs = runs.concat(inlineHtmlToRuns(cn)))
                 );
-                if (runs.length > 0)
+                if (runs.length > 0) {
                     blocks.push(new Paragraph({ children: toTextRuns(runs) }));
+                }
             }
             continue;
         }
@@ -162,7 +200,12 @@ export async function htmlToDocxBlocks(
                 li.childNodes.forEach(
                     (cn) => (runs = runs.concat(inlineHtmlToRuns(cn)))
                 );
-                const bullet = new TextRun('• ');
+                const bullet = new TextRun({
+                    text: '• ',
+                    font: FONT,
+                    size: SIZE_BODY,
+                    color: '000000',
+                });
                 blocks.push(
                     new Paragraph({ children: [bullet, ...toTextRuns(runs)] })
                 );
@@ -178,7 +221,12 @@ export async function htmlToDocxBlocks(
                 li.childNodes.forEach(
                     (cn) => (runs = runs.concat(inlineHtmlToRuns(cn)))
                 );
-                const num = new TextRun(`${olCounter++}. `);
+                const num = new TextRun({
+                    text: `${olCounter++}. `,
+                    font: FONT,
+                    size: SIZE_BODY,
+                    color: '000000',
+                });
                 blocks.push(
                     new Paragraph({ children: [num, ...toTextRuns(runs)] })
                 );
@@ -200,15 +248,45 @@ export async function htmlToDocxBlocks(
                     maxImageWidth,
                     maxImageHeight
                 );
-                blocks.push(new Paragraph({ children: [image] }));
+                blocks.push(
+                    new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [image],
+                    })
+                );
             } catch {
-                blocks.push(new Paragraph(`[Imagen no disponible: ${src}]`));
+                blocks.push(
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `[Imagen no disponible: ${src}]`,
+                                font: FONT,
+                                size: SIZE_BODY,
+                            }),
+                        ],
+                        alignment: AlignmentType.CENTER,
+                    })
+                );
             }
             continue;
         }
 
+        // Cualquier otra etiqueta → texto plano con estilo cuerpo
         const fallback = normalizeText(el.textContent ?? '');
-        if (fallback) blocks.push(new Paragraph(fallback));
+        if (fallback) {
+            blocks.push(
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: fallback,
+                            font: FONT,
+                            size: SIZE_BODY,
+                            color: '000000',
+                        }),
+                    ],
+                })
+            );
+        }
     }
 
     return blocks;
