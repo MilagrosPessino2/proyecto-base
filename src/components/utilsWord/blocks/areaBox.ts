@@ -10,7 +10,7 @@ import {
     TextRun,
     WidthType,
 } from 'docx';
-import { COLOR_TOKENS } from '../colors';
+import { COLOR_TOKENS } from '../../config/constants';
 
 /** Franja "area" con fondo y borde del sector */
 export function makeareaBox(sectorGeneral: string): Table {

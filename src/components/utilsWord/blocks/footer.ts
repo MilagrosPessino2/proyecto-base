@@ -1,5 +1,5 @@
 import { AlignmentType, Footer, Paragraph, TextRun } from 'docx';
-import { COLOR_TOKENS } from '../colors';
+import { COLOR_TOKENS } from '../../config/constants';
 
 /** Footer reutilizable (centrado) */
 export function buildFooter(label: string): Footer {

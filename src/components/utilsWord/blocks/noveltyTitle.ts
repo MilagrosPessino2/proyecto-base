@@ -1,5 +1,5 @@
 import { Paragraph, TextRun, UnderlineType } from 'docx';
-import { COLOR_TOKENS } from '../colors';
+import { COLOR_TOKENS } from '../../config/constants';
 
 /** Título de novedad (ítem) */
 export function noveltyTitle(text: string): Paragraph {

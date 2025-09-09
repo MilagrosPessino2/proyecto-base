@@ -1,5 +1,5 @@
 import { BorderStyle, Paragraph } from 'docx';
-import { COLOR_TOKENS } from '../colors';
+import { COLOR_TOKENS } from '../../config/constants';
 
 /** Línea separadora fina entre items */
 export function thinSeparator(): Paragraph {

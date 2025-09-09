@@ -1,11 +1,11 @@
 /* Estado de layout para imitar tu cálculo dinámico de límites por imagen */
 export type LayoutState = {
-    altoHoja: number;          // alto total “utilizable” (px)
-    anchoHoja: number;         // ancho total “utilizable” (px)
-    margen: number;            // margen lateral (px)
-    pieDePagina: number;       // alto reservado para pie (px)
-    coordenadaYActual: number; // “cursor vertical” usado hasta ahora (px)
-    espacioEntreImagenes: number; // separación luego de cada imagen (px)
+    altoHoja: number;          // alto total 
+    anchoHoja: number;         // ancho total 
+    margen: number;            // margen lateral 
+    pieDePagina: number;       // alto reservado para pie 
+    coordenadaYActual: number; // “cursor vertical” usado hasta ahora 
+    espacioEntreImagenes: number; // separación luego de cada imagen 
 };
 
 

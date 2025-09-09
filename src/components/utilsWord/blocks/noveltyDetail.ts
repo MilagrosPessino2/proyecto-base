@@ -1,5 +1,5 @@
 import { Paragraph, TextRun } from 'docx';
-import { COLOR_TOKENS } from '../colors';
+import { COLOR_TOKENS } from '../../config/constants';
 
 /** Detalle/Descripción del ítem */
 export function noveltyDetail(text: string): Paragraph {

@@ -1,5 +1,5 @@
 import { AlignmentType, Header, Paragraph, TextRun } from 'docx';
-import { COLOR_TOKENS } from '../colors';
+import { COLOR_TOKENS } from '../../config/constants';
 
 /** Header reutilizable (texto a la derecha) */
 export function buildHeader(label: string): Header {
