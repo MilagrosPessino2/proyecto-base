@@ -1,13 +1,13 @@
 import { useState, useCallback } from 'react';
-import { createNovedadesDoc } from '../utilsWord/buildDoc';
-import { downloadDoc } from '../utilsWord/downloadDoc';
-import dataDefault from '../../data/mockNovedades';
-import type { BuildDocInput } from '../utilsWord/types';
+import { createNovedadesDoc } from '../utilsWord/buildDocx';
+import { downloadDoc } from '../utilsWord/downloadDocx';
+import dataDefault from '../../data/textoEnriquecido'; // <-- mock RICH (cambiá el path a tu archivo real)
+import type { BuildDocRichInput } from '../utilsWord/types';
 import { DOCX_FILENAME } from '../config/constants';
 
 type UseNovedadesDownloadArgs = {
     filename?: string;
-    inputOverride?: Omit<BuildDocInput, 'maxItemsPerSection'>; // por si querés pasar datos distintos a mockNovedades
+    inputOverride?: Omit<BuildDocRichInput, 'maxItemsPerSection'>;
 };
 
 export function useNovedadesDownload({
@@ -20,9 +20,9 @@ export function useNovedadesDownload({
         try {
             setLoading(true);
 
-            const input: BuildDocInput = inputOverride ?? {
+            const input: BuildDocRichInput = inputOverride ?? {
                 sectorGeneral: dataDefault.area,
-                novedad: dataDefault.novedad,
+                novedad: dataDefault.novedad, // ← debe ser SeccionAreaRich[]
                 confidentialityLabel: 'YPF-Confidencial',
             };
 
