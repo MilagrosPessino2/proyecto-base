@@ -6,46 +6,15 @@ export type ImagenOrdenada = {
     original: { alto: number; ancho: number };
 };
 
-/* Reajusta manteniendo aspecto dentro de (altoMaximo x anchoMaximo). */
-export function reajustarDimensiones(
-    altoMaximo: number,
-    anchoMaximo: number,
-    altoImagen: number,
-    anchoImagen: number
-): DimensionHW {
-    const relacionAspecto = altoImagen / anchoImagen;
-    let nuevoAlto = altoMaximo;
-    let nuevoAncho = anchoMaximo;
 
-    if (altoImagen > altoMaximo || anchoImagen > anchoMaximo) {
-        if (altoImagen / anchoImagen > altoMaximo / anchoMaximo) {
-            nuevoAlto = altoMaximo;
-            nuevoAncho = altoMaximo / relacionAspecto;
-        } else {
-            nuevoAncho = anchoMaximo;
-            nuevoAlto = anchoMaximo * relacionAspecto;
-        }
-    } else {
-        if (altoImagen < altoMaximo && anchoImagen < anchoMaximo) {
-            nuevoAlto = altoImagen;
-            nuevoAncho = anchoImagen;
-        }
-    }
-
-    return {
-        alto: Math.max(1, Math.round(nuevoAlto)),
-        ancho: Math.max(1, Math.round(nuevoAncho)),
-    };
-}
-
-/* Comparador por alto ASC → ancho ASC. */
+/* Comparador por alto ASC → ancho ASC */
 export function comparaImagenesPorAltoAncho(a: ImagenOrdenada, b: ImagenOrdenada): number {
     const da = a.dimension.alto - b.dimension.alto;
     if (da !== 0) return da;
     return a.dimension.ancho - b.dimension.ancho;
 }
 
-/* Inserta manteniendo el orden dado por comparar. */
+/* Inserta manteniendo el orden dado por comparar */
 export function insertarOrdenado<T>(
     coleccion: T[],
     aInsertar: T,
@@ -57,7 +26,7 @@ export function insertarOrdenado<T>(
     return coleccion;
 }
 
-/* Carga bytes y dimensiones reales desde URL. */
+/* Carga bytes y dimensiones reales desde URL */
 export async function loadImageOriginal(url: string): Promise<{ data: Uint8Array; alto: number; ancho: number } | null> {
     const res = await fetch(url);
     if (!res.ok) return null;
