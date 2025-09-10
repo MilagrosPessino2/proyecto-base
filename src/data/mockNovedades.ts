@@ -91,6 +91,7 @@ export const novedades: SeccionArea[] = [
                     '/img/prueba10.png',
                     '/img/prueba11.png',
                     '/img/prueba12.jpg',
+                    '/img/prueba13.png',
 
 
                 ],
