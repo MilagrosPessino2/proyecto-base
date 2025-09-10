@@ -57,10 +57,10 @@ async function buildSectionsAsync(
             const height = Math.max(1, Math.round(width * relacion));
 
             const wrapper: ImagenOrdenada = {
-              data: raw.data,                           // ArrayBuffer
+              data: raw.data,                           
               dimension: { alto: height, ancho: width },
-              original: { alto: raw.alto, ancho: raw.ancho },
-              extension: raw.extension,                           // 'image/png'
+              dimesionOriginal: { alto: raw.alto, ancho: raw.ancho },
+              extension: raw.extension,                           
             };
 
             insertarOrdenado(wrappersOrdenados, wrapper, comparaImagenesPorAltoAncho);
@@ -74,7 +74,7 @@ async function buildSectionsAsync(
             data: w.data,
             width: w.dimension.ancho,
             height: w.dimension.alto,
-            extension: w.extension, // 'image/png'
+            extension: w.extension, 
           }));
           out.push(...imageGallery(escaladas));
         }
