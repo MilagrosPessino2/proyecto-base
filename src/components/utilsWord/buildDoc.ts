@@ -1,23 +1,34 @@
-// buildDoc.ts
 import { Document, Paragraph } from 'docx';
 import {
   buildFooter,
   buildHeader,
   makeareaBox,
   areaHeading,
-  noveltyDetail,
+  noveltyDetail,   // devuelve Paragraph[]
   noveltyTitle,
   thinSeparator,
 } from './blocks';
 import { imageGallery, type ImgEscalada } from './blocks/imageGallery';
 import type { SeccionArea, BuildDocInput } from './types';
-
 import {
   loadImageOriginal,
   insertarOrdenado,
   comparaImagenesPorAltoAncho,
   type ImagenOrdenada,
 } from './images';
+
+function intersperseWithSeparators(
+  paras: Paragraph[],
+  separatorFactory: () => Paragraph
+): Paragraph[] {
+  if (paras.length <= 1) return paras;
+  const out: Paragraph[] = [];
+  for (let i = 0; i < paras.length; i++) {
+    out.push(paras[i]);
+    if (i < paras.length - 1) out.push(separatorFactory());
+  }
+  return out;
+}
 
 async function buildSectionsAsync(
   sections: SeccionArea[],
@@ -31,8 +42,12 @@ async function buildSectionsAsync(
 
     for (const { tituloNovedad, detalleNovedad, imagenesNovedad } of items) {
       out.push(noveltyTitle(tituloNovedad));
-      out.push(noveltyDetail(detalleNovedad));
 
+      // --- Detalle con HTML controlado ---
+      const detalleParas = noveltyDetail(detalleNovedad);
+      out.push(...detalleParas);
+
+      // --- Imágenes con separadores entre sí ---
       if (imagenesNovedad && imagenesNovedad.length > 0) {
         const wrappersOrdenados: ImagenOrdenada[] = [];
 
@@ -57,10 +72,10 @@ async function buildSectionsAsync(
             const height = Math.max(1, Math.round(width * relacion));
 
             const wrapper: ImagenOrdenada = {
-              data: raw.data,                           
+              data: raw.data,
               dimension: { alto: height, ancho: width },
               dimesionOriginal: { alto: raw.alto, ancho: raw.ancho },
-              extension: raw.extension,                           
+              extension: raw.extension,
             };
 
             insertarOrdenado(wrappersOrdenados, wrapper, comparaImagenesPorAltoAncho);
@@ -70,19 +85,21 @@ async function buildSectionsAsync(
         }
 
         if (wrappersOrdenados.length > 0) {
-          const escaladas: ImgEscalada[] = wrappersOrdenados.map(w => ({
+          const escaladas: ImgEscalada[] = wrappersOrdenados.map((w) => ({
             data: w.data,
             width: w.dimension.ancho,
             height: w.dimension.alto,
-            extension: w.extension, 
+            extension: w.extension,
           }));
-          out.push(...imageGallery(escaladas));
+
+          const galleryParas = imageGallery(escaladas);
+          out.push(...intersperseWithSeparators(galleryParas, thinSeparator));
         }
       }
 
+      // Separador final del ítem
       out.push(thinSeparator());
     }
-
     out.push(new Paragraph({ spacing: { after: 50 } }));
   }
 
@@ -91,10 +108,7 @@ async function buildSectionsAsync(
 
 /* Builder principal (async) */
 export async function createNovedadesDoc(input: BuildDocInput): Promise<Document> {
-  const {
-    sectorGeneral,
-    novedad,
-  } = input;
+  const { sectorGeneral, novedad } = input;
 
   const PAGE_CONTENT_WIDTH = 500; // ajustá si cambian márgenes
   const MIN_IMAGE_WIDTH = 0;

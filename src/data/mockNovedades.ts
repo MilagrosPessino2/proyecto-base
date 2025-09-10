@@ -9,7 +9,19 @@ export const novedades: SeccionArea[] = [
         items: [
             {
                 tituloNovedad: 'ESTA ES UNA NOVEDAD DE SA',
-                detalleNovedad: 'Prueba de Novedad novedosa',
+                detalleNovedad: `
+                            <p>Soy texto enriquecido</p><p><strong>Negrita</strong> y <em>cursiva</em> con <u>subrayado</u>.
+                            <br>Soy un salto de linea</p>
+                            <ul>
+                            <li><strong>Punto</strong> con <em>formato</em></li>
+                            <li>Segundo punto</li>
+                            </ul>
+                            <ol>
+                            <li>Ítem 1 numerado</li>
+                            <li>Ítem 2 numerado</li>
+                            </ol>
+                            <img src="/img/prueba1.png" />
+                            <p>Texto de cierre.</p>`,
                 imagenesNovedad: ['/img/prueba1.png'],
             },
         ],

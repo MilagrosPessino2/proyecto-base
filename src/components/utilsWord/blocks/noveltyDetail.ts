@@ -1,16 +1,9 @@
-import { Paragraph, TextRun } from 'docx';
-import { COLOR_TOKENS, TAMANIO } from '../../config/constants';
+import { Paragraph } from 'docx';
+import { htmlToParagraphsControlled } from '../htmlToDoc';
 
-/** Detalle/Descripción del ítem */
-export function noveltyDetail(text: string): Paragraph {
-    return new Paragraph({
-        children: [
-            new TextRun({
-                text,
-                color: COLOR_TOKENS.textoDetalleNovedad,
-                size: TAMANIO.tamanioTextoDetalleNovedad,
-            }),
-        ],
-        spacing: { after: 120 },
-    });
+
+
+/* Detalle/Descripción del ítem con HTML controlado Paragraph*/
+export function noveltyDetail(htmlFragment: string): Paragraph[] {
+  return htmlToParagraphsControlled(htmlFragment ?? '');
 }
