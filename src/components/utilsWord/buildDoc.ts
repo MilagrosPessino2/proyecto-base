@@ -17,19 +17,6 @@ import {
   type ImagenOrdenada,
 } from './images';
 
-function intersperseWithSeparators(
-  paras: Paragraph[],
-  separatorFactory: () => Paragraph
-): Paragraph[] {
-  if (paras.length <= 1) return paras;
-  const out: Paragraph[] = [];
-  for (let i = 0; i < paras.length; i++) {
-    out.push(paras[i]);
-    if (i < paras.length - 1) out.push(separatorFactory());
-  }
-  return out;
-}
-
 async function buildSectionsAsync(
   sections: SeccionArea[],
   pageContentWidthPx: number,
@@ -43,11 +30,11 @@ async function buildSectionsAsync(
     for (const { tituloNovedad, detalleNovedad, imagenesNovedad } of items) {
       out.push(noveltyTitle(tituloNovedad));
 
-      // --- Detalle con HTML controlado ---
+      // Detalle con HTML controlado 
       const detalleParas = noveltyDetail(detalleNovedad);
       out.push(...detalleParas);
 
-      // --- Imágenes con separadores entre sí ---
+      //  Imágenes 
       if (imagenesNovedad && imagenesNovedad.length > 0) {
         const wrappersOrdenados: ImagenOrdenada[] = [];
 
@@ -93,13 +80,14 @@ async function buildSectionsAsync(
           }));
 
           const galleryParas = imageGallery(escaladas);
-          out.push(...intersperseWithSeparators(galleryParas, thinSeparator));
+         
+          out.push(...galleryParas);
         }
       }
 
-      // Separador final del ítem
       out.push(thinSeparator());
     }
+
     out.push(new Paragraph({ spacing: { after: 50 } }));
   }
 
